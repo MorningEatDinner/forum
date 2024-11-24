@@ -1,0 +1,141 @@
+// userModel.api
+syntax = "v1"
+
+// 基础用户信息
+type User {
+    UserId int64 `json:"userId"`
+    Username string `json:"username"`
+    Email string `json:"email"`
+    Phone string `json:"phone,optional"`
+    City string `json:"city,optional"`
+    Introduction string `json:"introduction,optional"`
+    Avatar string `json:"avatar,optional"`
+}
+
+// 检查手机号是否存在
+type (
+    CheckMobileReq {
+        Phone string `json:"phone"`
+    }
+    CheckMobileResp {
+        Exist bool `json:"exist"`
+    }
+)
+
+// 获取图形验证码
+type (
+    CaptchaReq {
+    }
+    CaptchaResp {
+        CaptchaId string `json:"captchaId"`
+        ImageBase64 string `json:"imageBase64"`
+    }
+)
+
+// 获取手机验证码
+type (
+    GetMobileCodeReq {
+        Phone string `json:"phone"`
+        CaptchaId string `json:"captchaId"`
+        CaptchaCode string `json:"captchaCode"`
+    }
+    GetMobileCodeResp {
+    }
+)
+
+// 注册
+type (
+    RegisterReq {
+        Phone string `json:"phone,omitempty"`
+        Code string `json:"code,omitempty"`
+        Name string `json:"name"`
+        Password string `json:"password"`
+        PasswordConfirm string `json:"password_confirm"`
+    }
+    RegisterResp {
+        AccessToken string `json:"accessToken"`
+        RefreshToken string `json:"refreshToken"`
+        ExpiresIn int64 `json:"expiresIn"`
+    }
+)
+
+// 登录
+type (
+    LoginReq {
+        Username string `json:"username,optional"`
+        Email string `json:"email,optional"`
+        Phone string `json:"phone,optional"`
+        Password string `json:"password"`
+    }
+    LoginResp {
+        AccessToken string `json:"accessToken"`
+        RefreshToken string `json:"refreshToken"`
+        ExpiresIn int64 `json:"expiresIn"`
+    }
+)
+
+// 刷新token
+type (
+    RefreshTokenReq {
+        RefreshToken string `json:"refreshToken"`
+    }
+    RefreshTokenResp {
+        AccessToken string `json:"accessToken"`
+        RefreshToken string `json:"refreshToken"`
+        ExpiresIn int64 `json:"expiresIn"`
+    }
+)
+
+// 获取用户信息
+type (
+    UserInfoReq {
+    }
+    UserInfoResp {
+        User User `json:"user"`
+    }
+)
+
+// 更新用户信息
+type (
+    UpdateUserInfoReq {
+        Username string `json:"username,optional"`
+        City string `json:"city,optional"`
+        Introduction string `json:"introduction,optional"`
+    }
+    UpdateUserInfoResp {
+        User User `json:"user"`
+    }
+)
+
+// 更新手机号
+type (
+    UpdateMobileReq {
+        NewPhone string `json:"newPhone"`
+        Code string `json:"code"`
+    }
+    UpdateMobileResp {
+        User User `json:"user"`
+    }
+)
+
+// 更新邮箱
+type (
+    UpdateEmailReq {
+        Email string `json:"email"`
+        Code string `json:"code"`
+    }
+    UpdateEmailResp {
+        User User `json:"user"`
+    }
+)
+
+// 更新密码
+type (
+    UpdatePasswordReq {
+        OldPassword string `json:"oldPassword"`
+        NewPassword string `json:"newPassword"`
+        ConfirmPassword string `json:"confirmPassword"`
+    }
+    UpdatePasswordResp {
+    }
+)

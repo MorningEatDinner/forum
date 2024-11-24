@@ -1,0 +1,73 @@
+syntax = "v1"
+
+info (
+	title:   "用户服务"
+	desc:    "用户服务"
+	author:  "morningeatdinner"
+	email:   "1298453249@qq.com"
+	version: "v1"
+)
+
+import (
+	"user/userModel.api"
+)
+
+//public endpoints
+@server (
+	prefix: user/v1
+	group:  public
+)
+service usercenter {
+	@doc "check if mobile exists"
+	@handler checkMobile
+	get /check-mobile (CheckMobileReq) returns (CheckMobileResp)
+
+	@doc "get captcha"
+	@handler getCaptcha
+	get /captcha (CaptchaReq) returns (CaptchaResp)
+
+	@doc "get mobile verification code"
+	@handler getMobileCode
+	post /mobile-code (GetMobileCodeReq) returns (GetMobileCodeResp)
+
+	@doc "register"
+	@handler register
+	post /register (RegisterReq) returns (RegisterResp)
+
+	@doc "login"
+	@handler login
+	post /login (LoginReq) returns (LoginResp)
+}
+
+//authenticated endpoints
+@server (
+	prefix: user/v1
+	group:  profile
+	jwt:    JwtAuth
+)
+service usercenter {
+	@doc "refresh token"
+	@handler refreshToken
+	post /refresh-token (RefreshTokenReq) returns (RefreshTokenResp)
+
+	@doc "get user info"
+	@handler detail
+	get /detail (UserInfoReq) returns (UserInfoResp)
+
+	@doc "update user info"
+	@handler updateInfo
+	post /update (UpdateUserInfoReq) returns (UpdateUserInfoResp)
+
+	@doc "update mobile"
+	@handler updateMobile
+	post /update-mobile (UpdateMobileReq) returns (UpdateMobileResp)
+
+	@doc "update email"
+	@handler updateEmail
+	post /update-email (UpdateEmailReq) returns (UpdateEmailResp)
+
+	@doc "update password"
+	@handler updatePassword
+	post /update-password (UpdatePasswordReq) returns (UpdatePasswordResp)
+}
+
