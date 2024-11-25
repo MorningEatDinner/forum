@@ -5,7 +5,9 @@ import (
 
 	"forum/app/user/api/internal/svc"
 	"forum/app/user/api/internal/types"
+	"forum/app/user/rpc/pb"
 
+	"github.com/jinzhu/copier"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -25,7 +27,17 @@ func NewGetMobileCodeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Get
 }
 
 func (l *GetMobileCodeLogic) GetMobileCode(req *types.GetMobileCodeReq) (resp *types.GetMobileCodeResp, err error) {
-	// todo: add your logic here and delete this line
+	getMobilResp, err := l.svcCtx.UserRpc.GetMobileCode(l.ctx, &pb.GetMobileCodeRequest{
+		Phone:       req.Phone,
+		CaptchaId:   req.CaptchaId,
+		CaptchaCode: req.CaptchaCode,
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("GetMobileCode: %v", err)
+		return
+	}
+	resp = &types.GetMobileCodeResp{}
+	copier.Copy(resp, getMobilResp)
 
 	return
 }
