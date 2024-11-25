@@ -25,7 +25,9 @@ func NewUpdateInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Update
 }
 
 func (l *UpdateInfoLogic) UpdateInfo(req *types.UpdateUserInfoReq) (resp *types.UpdateUserInfoResp, err error) {
-	// todo: add your logic here and delete this line
+	// 获取当前userid
+	// userId := ctxdata.GetUidFromCtx(l.ctx)
+	// updatedResp, err := l.svcCtx.UserRpc.UpdateUserInfo(l.ctx, &pb.UpdateUserInfoRequest{})
 
 	return
 }

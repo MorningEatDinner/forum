@@ -12,6 +12,10 @@ type Config struct {
 	DB struct {
 		DataSource string
 	}
+	JwtAuth struct {
+		AccessSecret string
+		AccessExpire int64
+	}
 	Cache cache.CacheConf
 	Sms   sms.SMSConfig
 }

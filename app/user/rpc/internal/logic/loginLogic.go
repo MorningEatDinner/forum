@@ -2,10 +2,16 @@ package logic
 
 import (
 	"context"
+	"database/sql"
 
+	"forum/app/user/model"
 	"forum/app/user/rpc/internal/svc"
 	"forum/app/user/rpc/pb"
+	"forum/app/user/rpc/userservice"
+	"forum/common/tool"
+	"forum/common/xerr"
 
+	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -24,7 +30,45 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 }
 
 func (l *LoginLogic) Login(in *pb.LoginRequest) (*pb.LoginResponse, error) {
-	// todo: add your logic here and delete this line
+	var user *model.Users
+	var err error
+	if in.Email != nil {
+		// 邮箱登录
+		user, err = l.svcCtx.UserModel.FindOneByEmail(l.ctx, *in.Email)
+	} else if in.Phone != nil {
+		// 手机登录
+		user, err = l.svcCtx.UserModel.FindOneByPhone(l.ctx, sql.NullString{String: *in.Phone, Valid: true})
+	} else {
+		// 用户名登录
+		user, err = l.svcCtx.UserModel.FindOneByUsername(l.ctx, *in.Username)
+	}
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("failed to login: %v", err)
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "failed to login: %v", err)
+	}
+	if user == nil {
+		logx.WithContext(l.ctx).Errorf("user not found")
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.USER_NOT_FOUND), "user not found")
+	}
 
-	return &pb.LoginResponse{}, nil
+	// 验证密码
+	if !tool.CheckPasswordHash(in.Password, user.Password) {
+		logx.WithContext(l.ctx).Errorf("incorrect password")
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.USER_PASSWORD_ERROR), "incorrect password")
+	}
+
+	// 如果都相等, 那么返回用户信息
+	generateTokenLogic := NewGenerateTokenLogic(l.ctx, l.svcCtx)
+	tokenResp, err := generateTokenLogic.GenerateToken(&userservice.GenerateTokenReq{
+		UserId: user.UserId,
+	})
+	if err != nil {
+		return nil, errors.Wrapf(ErrGenerateTokenError, "GenerateToken userId : %d", user.UserId)
+	}
+
+	return &pb.LoginResponse{
+		AccessToken:  tokenResp.AccessToken,
+		RefreshToken: "",
+		ExpiresIn:    tokenResp.AccessExpire,
+	}, nil
 }

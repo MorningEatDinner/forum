@@ -5,7 +5,9 @@ import (
 
 	"forum/app/user/api/internal/svc"
 	"forum/app/user/api/internal/types"
+	"forum/app/user/rpc/pb"
 
+	"github.com/jinzhu/copier"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -25,7 +27,18 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 }
 
 func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterResp, err error) {
-	// todo: add your logic here and delete this line
-
+	registerResp, err := l.svcCtx.UserRpc.Register(l.ctx, &pb.RegisterRequest{
+		Phone:           &req.Phone,
+		Password:        req.Password,
+		Code:            &req.Code,
+		Name:            req.Name,
+		PasswordConfirm: req.PasswordConfirm,
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Error("注册失败", err.Error())
+		return
+	}
+	resp = &types.RegisterResp{}
+	copier.Copy(resp, registerResp)
 	return
 }

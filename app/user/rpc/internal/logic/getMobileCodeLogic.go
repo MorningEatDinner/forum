@@ -23,7 +23,7 @@ type GetMobileCodeLogic struct {
 }
 
 const (
-	PhoneCodeExpireTime = time.Minute * 5
+	PhoneCodeExpireTime = time.Minute * 15
 )
 
 func NewGetMobileCodeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetMobileCodeLogic {
