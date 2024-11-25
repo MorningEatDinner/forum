@@ -5,4 +5,5 @@ data/mysql/data/*
 *.pid
 *.sock
 data/
-app/**/*.yaml      # 匹配app下任意层级的yaml文件
+app/user/rpc/etc/user.yaml
+app/user/api/etc/usercenter.yaml
