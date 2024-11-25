@@ -7,6 +7,7 @@ import (
 	"forum/common/globalkey"
 	"time"
 
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 )
 
@@ -25,7 +26,8 @@ func (s *RedisStore) Set(id string, value string) error {
 	expireSeconds := int(expireTime.Seconds())
 
 	key := fmt.Sprintf(globalkey.GetRedisKey(globalkey.CaptchaKey), id)
-	if err := s.RedisClient.SetexCtx(s.Ctx, key, value, expireSeconds); err != nil {
+	if err := s.RedisClient.Setex(key, value, expireSeconds); err != nil {
+		logx.WithContext(s.Ctx).Error("存储数据失败", err.Error())
 		return errors.New("存储数据失败")
 	}
 
@@ -35,12 +37,13 @@ func (s *RedisStore) Set(id string, value string) error {
 // Get：获得验证码的值
 func (s *RedisStore) Get(id string, clear bool) string {
 	key := fmt.Sprintf(globalkey.GetRedisKey(globalkey.CaptchaKey), id)
-	val, err := s.RedisClient.GetCtx(s.Ctx, key)
+	fmt.Println("key: ", key)
+	val, err := s.RedisClient.Get(key)
 	if err != nil {
 		return ""
 	}
 	if clear {
-		_, _ = s.RedisClient.DelCtx(s.Ctx, key)
+		_, _ = s.RedisClient.Del(key)
 	}
 	return val
 }

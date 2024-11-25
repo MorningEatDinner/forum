@@ -52,5 +52,5 @@ func (c *Captcha) GenerateCaptcha() (id, b64s, answer string, err error) {
 }
 
 func (c *Captcha) VerifyCaptcha(id, answer string) (match bool) {
-	return c.Base64Captcha.Verify(id, answer, false)
+	return c.Base64Captcha.Store.Verify(id, answer, true)
 }

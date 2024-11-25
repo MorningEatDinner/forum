@@ -46,7 +46,7 @@ func (l *GetMobileCodeLogic) GetMobileCode(in *pb.GetMobileCodeRequest) (*pb.Get
 	code := helpers.GenerateRandomCode()
 	// 3. 保存到Redis中
 	key := fmt.Sprintf(globalkey.GetRedisKey(globalkey.PhoneCodeKey), in.Phone)
-	_, err := l.svcCtx.RedisClient.SetnxExCtx(l.ctx, key, code, int(PhoneCodeExpireTime.Seconds()))
+	err := l.svcCtx.RedisClient.Setex(key, code, int(PhoneCodeExpireTime.Seconds()))
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "failed to save code to database, key is %s", key)
 	}
