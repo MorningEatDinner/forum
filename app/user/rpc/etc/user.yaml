@@ -1,0 +1,18 @@
+Name: usercenter-rpc
+ListenOn: 0.0.0.0:3001
+Mode: dev
+#jwtAuth
+JwtAuth:
+  AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505da0
+  AccessExpire: 31536000
+Redis:
+  Host: localhost:26379
+  Type: node
+  Pass: G62m50oigInC30sf
+  Key: user-rpc
+DB:
+  DataSource: root:PXDN93VRKUm8TeE7@tcp(localhost:23069)/users?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+Cache:
+  - Host: localhost:26379
+    Pass: G62m50oigInC30sf
+

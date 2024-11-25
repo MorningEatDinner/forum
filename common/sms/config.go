@@ -1,8 +1,8 @@
 package sms
 
 type SMSConfig struct {
-	AccessKeyID     string `mapstructure:"access_key_id"`
-	AccessKeySecret string `mapstructure:"access_key_secret"`
-	SignName        string `mapstructure:"sign_name"`
-	TemplateCode    string `mapstructure:"template_code"`
+	AccessKeyID     string `json:"access_key_id"`
+	AccessKeySecret string `json:"access_key_secret"`
+	SignName        string `json:"sign_name"`
+	TemplateCode    string `json:"template_code"`
 }
