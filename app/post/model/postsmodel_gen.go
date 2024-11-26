@@ -31,6 +31,9 @@ type (
 		FindOne(ctx context.Context, postId int64) (*Posts, error)
 		Update(ctx context.Context, data *Posts) error
 		Delete(ctx context.Context, postId int64) error
+		FindAll(ctx context.Context, page int64, size int64) ([]*Posts, error)
+		FindByCommunityId(ctx context.Context, communityId int64, page int64, size int64) ([]*Posts, error)
+		FindByAuthorId(ctx context.Context, authorId int64, page int64, size int64) ([]*Posts, error)
 	}
 
 	defaultPostsModel struct {
@@ -111,4 +114,50 @@ func (m *defaultPostsModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn,
 
 func (m *defaultPostsModel) tableName() string {
 	return m.table
+}
+
+func (m *defaultPostsModel) FindAll(ctx context.Context, page int64, size int64) ([]*Posts, error) {
+	var resp []*Posts
+	offset := (page - 1) * size
+	query := fmt.Sprintf("select %s from %s limit ? offset ?", postsRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, size, offset)
+	switch err {
+	case nil:
+		return resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+
+func (m *defaultPostsModel) FindByCommunityId(ctx context.Context, communityId int64, page int64, size int64) ([]*Posts, error) {
+	var resp []*Posts
+	offset := (page - 1) * size
+	query := fmt.Sprintf("select %s from %s where `community_id` = ? limit ? offset ?", postsRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, communityId, size, offset)
+	switch err {
+	case nil:
+		return resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultPostsModel) FindByAuthorId(ctx context.Context, authorId int64, page int64, size int64) ([]*Posts, error) {
+	var resp []*Posts
+	offset := (page - 1) * size
+	query := fmt.Sprintf("select %s from %s where `author_id` = ? limit ? offset ?", postsRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, authorId, size, offset)
+	switch err {
+	case nil:
+		return resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
 }

@@ -12,4 +12,5 @@ type Config struct {
 		AccessExpire int64
 	}
 	CommunityRpcConf zrpc.RpcClientConf
+	PostRpcConf      zrpc.RpcClientConf
 }

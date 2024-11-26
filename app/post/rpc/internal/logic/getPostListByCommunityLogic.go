@@ -25,6 +25,19 @@ func NewGetPostListByCommunityLogic(ctx context.Context, svcCtx *svc.ServiceCont
 
 func (l *GetPostListByCommunityLogic) GetPostListByCommunity(in *pb.GetPostListByCommunityRequest) (*pb.GetPostListByCommunityResponse, error) {
 	// todo: add your logic here and delete this line
+	logic := NewGetPostListLogic(l.ctx, l.svcCtx)
+	getResp, err := logic.GetPostList(&pb.GetPostListRequest{
+		CommunityId: &in.CommunityId,
+		Page:        in.Page,
+		PageSize:    in.PageSize,
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("get post list by community failed, err: %v", err)
+		return nil, err
+	}
 
-	return &pb.GetPostListByCommunityResponse{}, nil
+	return &pb.GetPostListByCommunityResponse{
+		Posts: getResp.Posts,
+		Total: getResp.Total,
+	}, nil
 }

@@ -37,7 +37,7 @@ type GetCommunityDetailsResp struct {
 }
 
 type GetCommunityPostsReq struct {
-	CommunityId int64 `form:"communityId"`
+	CommunityId int64 `path:"id"`
 	Page        int   `form:"page,optional,default=1"`
 	PageSize    int   `form:"pageSize,optional,default=10"`
 }
@@ -48,7 +48,7 @@ type GetCommunityPostsResp struct {
 }
 
 type Post struct {
-	Id        int64  `json:"id"`
+	PostId        int64  `json:"id"`
 	Title     string `json:"title"`
 	Content   string `json:"content"`
 	CreatedAt string `json:"createdAt"`
