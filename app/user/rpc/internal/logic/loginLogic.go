@@ -31,15 +31,20 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 func (l *LoginLogic) Login(in *pb.LoginRequest) (*pb.LoginResponse, error) {
 	var user *model.Users
 	var err error
-	if in.Email != nil {
+	logx.WithContext(l.ctx).Infof("Login request - Email: %v, Phone: %v, Username: %v", *in.Email, *in.Phone, *in.Username)
+	if in.Email != nil && *in.Email != "" {
 		// 邮箱登录
 		user, err = l.svcCtx.UserModel.FindOneByEmail(l.ctx, *in.Email)
-	} else if in.Phone != nil {
+	} else if in.Phone != nil && *in.Phone != "" {
 		// 手机登录
 		user, err = l.svcCtx.UserModel.FindOneByPhone(l.ctx, sql.NullString{String: *in.Phone, Valid: true})
-	} else {
+	} else if in.Username != nil && *in.Username != "" {
 		// 用户名登录
 		user, err = l.svcCtx.UserModel.FindOneByUsername(l.ctx, *in.Username)
+	} else {
+		// 没有提供任何登录信息
+		logx.WithContext(l.ctx).Errorf("no login information provided")
+		return nil, errors.Wrapf(xerr.NewErrMsg("no login information provided"), "no login information provided")
 	}
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("failed to login: %v", err)

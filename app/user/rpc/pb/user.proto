@@ -133,9 +133,9 @@ message UpdateEmailResponse {
 }
 
 message UpdatePasswordRequest {
-  string oldPassword = 1;
-  string newPassword = 2;
-  string confirmPassword = 3;
+  int64 userId = 1;
+  string oldPassword = 2;
+  string newPassword = 3;
 }
 
 message UpdatePasswordResponse {
