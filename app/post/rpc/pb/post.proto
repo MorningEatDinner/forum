@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+package pb;
+
+service PostService {
+    rpc CreatePost(CreatePostRequest) returns (CreatePostResponse) {}
+    rpc GetPostDetail(GetPostDetailRequest) returns (GetPostDetailResponse) {}
+    rpc GetPostList(GetPostListRequest) returns (GetPostListResponse) {}
+    rpc GetPostListByCommunity(GetPostListByCommunityRequest) returns (GetPostListByCommunityResponse) {}
+    rpc DeletePost(DeletePostRequest) returns (DeletePostResponse) {}
+}
+
+// 基础帖子信息
+message Post {
+    int64 postId = 1;            // 帖子ID
+    int64 authorId = 2;          // 作者ID
+    int64 communityId = 3;       // 社区ID
+    string title = 4;            // 帖子标题
+    string content = 5;          // 帖子内容
+    string createTime = 6;       // 创建时间
+    string updatedTime = 7;      // 更新时间
+}
+
+message CreatePostRequest {
+    int64 authorId = 1;          // 作者ID
+    int64 communityId = 2;       // 社区ID
+    string title = 3;            // 帖子标题
+    string content = 4;          // 帖子内容
+}
+
+message CreatePostResponse {
+    int64 postId = 1;            // 创建的帖子ID
+}
+
+message GetPostDetailRequest {
+    int64 postId = 1;            // 帖子ID
+}
+
+message GetPostDetailResponse {
+    Post post = 1;               // 帖子详情
+}
+
+message GetPostListRequest {
+    int64 page = 1;              // 页码
+    int64 pageSize = 2;          // 每页数量
+    optional int64 communityId = 3;  // 按社区筛选，可选
+    optional int64 authorId = 4;     // 按作者筛选，可选
+}
+
+message GetPostListResponse {
+    int64 total = 1;             // 总帖子数
+    repeated Post posts = 2;      // 帖子列表
+}
+
+// 新增: 根据社区ID获取帖子列表的请求和响应
+message GetPostListByCommunityRequest {
+    int64 communityId = 1;       // 社区ID
+    int64 page = 2;              // 页码
+    int64 pageSize = 3;          // 每页数量
+    optional string orderBy = 4;  // 排序方式（可选，默认按创建时间倒序）
+}
+
+message GetPostListByCommunityResponse {
+    int64 total = 1;             // 该社区的总帖子数
+    repeated Post posts = 2;      // 帖子列表
+    int64 communityId = 3;       // 社区ID
+}
+
+message DeletePostRequest {
+    int64 postId = 1;            // 要删除的帖子ID
+    int64 authorId = 2;          // 操作者ID（用于验证权限）
+}
+
+message DeletePostResponse {
+    bool success = 1;            // 删除是否成功
+}

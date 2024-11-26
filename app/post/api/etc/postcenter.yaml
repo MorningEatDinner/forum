@@ -1,0 +1,18 @@
+Name: post-api
+Host: 0.0.0.0
+Port: 8891
+#jwtAuth
+JwtAuth:
+  AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505da0
+  AccessExpire: 31536000
+  
+#rpc service
+PostRpcConf:
+  Endpoints:
+    - 127.0.0.1:3003
+  NonBlock: true
+
+CommunityRpcConf:
+  Endpoints:
+    - 127.0.0.1:3002
+  NonBlock: true

@@ -5,7 +5,11 @@ import (
 
 	"forum/app/community/api/internal/svc"
 	"forum/app/community/api/internal/types"
+	"forum/app/community/rpc/communityservice"
+	"forum/common/xerr"
 
+	"github.com/jinzhu/copier"
+	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -25,7 +29,25 @@ func NewGetAllCommunitiesLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *GetAllCommunitiesLogic) GetAllCommunities(req *types.GetAllCommunitiesReq) (resp *types.GetAllCommunitiesResp, err error) {
-	// todo: add your logic here and delete this line
+	var page, pageSize *int32
+	if req.Page != 0 {
+		pageVal := int32(req.Page)
+		page = &pageVal
+	}
+	if req.PageSize != 0 {
+		pageSizeVal := int32(req.PageSize)
+		pageSize = &pageSizeVal
+	}
+	getResp, err := l.svcCtx.CommunityRpc.GetAllCommunities(l.ctx, &communityservice.GetAllCommunitiesRequest{
+		Page:     page,
+		PageSize: pageSize,
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("get all communities failed, err: %v", err)
+		return nil, errors.Wrapf(xerr.NewErrMsg("get all communities failed"), "get all communities failed")
+	}
 
+	resp = &types.GetAllCommunitiesResp{}
+	copier.Copy(resp, getResp)
 	return
 }

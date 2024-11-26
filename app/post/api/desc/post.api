@@ -1,0 +1,46 @@
+// post.api
+syntax = "v1"
+
+info (
+	title:   "帖子服务"
+	desc:    "帖子服务"
+	author:  "morningeatdinner"
+	email:   "1298453249@qq.com"
+	version: "v1"
+)
+
+import (
+	"post/postModel.api"
+)
+
+// public endpoints
+@server (
+	prefix: post/v1
+	group:  public
+)
+service postcenter {
+	@doc "获取帖子列表"
+	@handler getPostList
+	get /posts (GetPostListReq) returns (GetPostListResp)
+
+	@doc "获取帖子详情"
+	@handler getPostDetail
+	get /posts/:postId (GetPostDetailReq) returns (GetPostDetailResp)
+}
+
+// authenticated endpoints
+@server (
+	prefix: post/v1
+	group:  post
+	jwt:    JwtAuth
+)
+service postcenter {
+	@doc "创建帖子"
+	@handler createPost
+	post /posts (CreatePostReq) returns (CreatePostResp)
+
+	@doc "删除帖子"
+	@handler deletePost
+	delete /posts/:postId (DeletePostReq) returns (DeletePostResp)
+}
+

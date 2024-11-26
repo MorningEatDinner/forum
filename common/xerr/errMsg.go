@@ -21,6 +21,7 @@ func init() {
 
 	// 社区模块错误
 	message[COMMUNITY_NAME_EXIST] = "社区名称已存在"
+	message[COMMUNITY_NOT_EXIST] = "社区不存在"
 }
 
 func MapErrMsg(errcode uint32) string {

@@ -33,7 +33,11 @@ type (
 		FindOneByCommunityName(ctx context.Context, communityName string) (*Communities, error)
 		Update(ctx context.Context, data *Communities) error
 		Delete(ctx context.Context, communityId uint64) error
+		GetCommunityList(ctx context.Context, page int32, pageSize int32) ([]*Communities, error) 
+		Count(ctx context.Context) (int64, error)	
+	
 	}
+
 
 	defaultCommunitiesModel struct {
 		sqlc.CachedConn
@@ -144,4 +148,58 @@ func (m *defaultCommunitiesModel) queryPrimary(ctx context.Context, conn sqlx.Sq
 
 func (m *defaultCommunitiesModel) tableName() string {
 	return m.table
+}
+func (m *defaultCommunitiesModel) GetCommunityList(ctx context.Context, page int32, pageSize int32) ([]*Communities, error) {
+	var resp []*Communities
+	offset := (page - 1) * pageSize // 计算偏移量
+	
+	query := fmt.Sprintf("select %s from %s order by community_id DESC limit ? offset ?", 
+		communitiesRows, m.table)
+		
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, pageSize, offset)
+	
+	switch err {
+	case nil:
+		return resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+// 带条件的计数方法
+func (m *defaultCommunitiesModel) CountWithCondition(ctx context.Context, whereClause string, args ...interface{}) (int64, error) {
+    var total int64
+    query := fmt.Sprintf("select count(*) from %s", m.table)
+    
+    // 如果有where条件就添加
+    if whereClause != "" {
+        query = fmt.Sprintf("%s where %s", query, whereClause)
+    }
+    
+    err := m.QueryRowNoCacheCtx(ctx, &total, query, args...)
+    switch err {
+    case nil:
+        return total, nil
+    case sqlc.ErrNotFound:
+        return 0, ErrNotFound
+    default:
+        return 0, err
+    }
+}
+
+func (m *defaultCommunitiesModel) Count(ctx context.Context) (int64, error) {
+    var total int64
+    query := fmt.Sprintf("select count(*) from %s", m.table)
+    
+    err := m.QueryRowNoCacheCtx(ctx, &total, query)
+    switch err {
+    case nil:
+        return total, nil
+    case sqlc.ErrNotFound:
+        return 0, ErrNotFound
+    default:
+        return 0, err
+    }
 }
