@@ -83,7 +83,8 @@ message LoginResponse {
 }
 
 message RefreshTokenRequest {
-  string refreshToken = 1;
+  string accessToken = 1;
+  string refreshToken = 2;
 }
 
 message RefreshTokenResponse {
@@ -101,9 +102,10 @@ message UserInfoResponse {
 }
 
 message UpdateUserInfoRequest {
-  optional string username = 1;
-  optional string city = 2;
-  optional string introduction = 3;
+  int64 userId = 1;
+  optional string username = 2;
+  optional string city = 3;
+  optional string introduction = 4;
 }
 
 message UpdateUserInfoResponse {
@@ -111,8 +113,9 @@ message UpdateUserInfoResponse {
 }
 
 message UpdateMobileRequest {
-  string newPhone = 1;
-  string code = 2;
+  int64 userId = 1;
+  string newPhone = 2;
+  string code = 3;
 }
 
 message UpdateMobileResponse {
@@ -120,8 +123,9 @@ message UpdateMobileResponse {
 }
 
 message UpdateEmailRequest {
-  string email = 1;
-  string code = 2;
+  int64 userId = 1;
+  string email = 2;
+  string code = 3;
 }
 
 message UpdateEmailResponse {
@@ -143,5 +147,5 @@ message GenerateTokenReq {
 message GenerateTokenResp {
   string accessToken = 1;
   int64 accessExpire = 2;
-  int64 refreshAfter = 3;
+  string refreshToken = 3;
 }

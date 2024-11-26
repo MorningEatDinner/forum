@@ -7,7 +7,6 @@ import (
 	"forum/app/user/model"
 	"forum/app/user/rpc/internal/svc"
 	"forum/app/user/rpc/pb"
-	"forum/app/user/rpc/userservice"
 	"forum/common/tool"
 	"forum/common/xerr"
 
@@ -59,7 +58,7 @@ func (l *LoginLogic) Login(in *pb.LoginRequest) (*pb.LoginResponse, error) {
 
 	// 如果都相等, 那么返回用户信息
 	generateTokenLogic := NewGenerateTokenLogic(l.ctx, l.svcCtx)
-	tokenResp, err := generateTokenLogic.GenerateToken(&userservice.GenerateTokenReq{
+	tokenResp, err := generateTokenLogic.GenerateToken(&pb.GenerateTokenReq{
 		UserId: user.UserId,
 	})
 	if err != nil {
@@ -68,7 +67,7 @@ func (l *LoginLogic) Login(in *pb.LoginRequest) (*pb.LoginResponse, error) {
 
 	return &pb.LoginResponse{
 		AccessToken:  tokenResp.AccessToken,
-		RefreshToken: "",
+		RefreshToken: tokenResp.RefreshToken,
 		ExpiresIn:    tokenResp.AccessExpire,
 	}, nil
 }

@@ -5,7 +5,7 @@ import (
 
 	"forum/app/user/api/internal/svc"
 	"forum/app/user/api/internal/types"
-	"forum/app/user/rpc/pb"
+	"forum/app/user/rpc/userservice"
 
 	"github.com/jinzhu/copier"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -28,7 +28,7 @@ func NewGetCaptchaLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetCap
 
 // 获取图形验证码
 func (l *GetCaptchaLogic) GetCaptcha(req *types.CaptchaReq) (resp *types.CaptchaResp, err error) {
-	captchaResp, err := l.svcCtx.UserRpc.GetCaptcha(l.ctx, &pb.CaptchaRequest{})
+	captchaResp, err := l.svcCtx.UserRpc.GetCaptcha(l.ctx, &userservice.CaptchaRequest{})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("GetCaptcha failed: %v", err)
 		return

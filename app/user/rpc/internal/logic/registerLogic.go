@@ -104,6 +104,6 @@ func (l *RegisterLogic) Register(in *pb.RegisterRequest) (*pb.RegisterResponse, 
 	return &pb.RegisterResponse{
 		AccessToken:  tokenResp.AccessToken,
 		ExpiresIn:    tokenResp.AccessExpire,
-		RefreshToken: "", // TODO: 后面修正这个错误;
+		RefreshToken: tokenResp.RefreshToken,
 	}, nil
 }

@@ -5,7 +5,7 @@ import (
 
 	"forum/app/user/api/internal/svc"
 	"forum/app/user/api/internal/types"
-	"forum/app/user/rpc/pb"
+	"forum/app/user/rpc/userservice"
 	"forum/common/ctxdata"
 
 	"github.com/jinzhu/copier"
@@ -31,7 +31,7 @@ func NewDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DetailLogi
 func (l *DetailLogic) Detail(req *types.UserInfoReq) (resp *types.UserInfoResp, err error) {
 	// 从jwt中可以获得当下的用户id
 	userId := ctxdata.GetUidFromCtx(l.ctx)
-	userResp, err := l.svcCtx.UserRpc.GetUserDetail(l.ctx, &pb.UserInfoRequest{
+	userResp, err := l.svcCtx.UserRpc.GetUserDetail(l.ctx, &userservice.UserInfoRequest{
 		UserId: userId,
 	})
 	if err != nil {

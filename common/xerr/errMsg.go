@@ -16,6 +16,7 @@ func init() {
 	message[USER_CAPTCHA_ERROR] = "验证码错误"
 	message[USER_NOT_FOUND] = "用户不存在"
 	message[USER_PASSWORD_ERROR] = "密码错误"
+	message[USER_NAME_EXISTS_ERROR] = "用户名已存在"
 }
 
 func MapErrMsg(errcode uint32) string {

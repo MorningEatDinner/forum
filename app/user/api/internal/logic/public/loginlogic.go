@@ -5,7 +5,7 @@ import (
 
 	"forum/app/user/api/internal/svc"
 	"forum/app/user/api/internal/types"
-	"forum/app/user/rpc/pb"
+	"forum/app/user/rpc/userservice"
 	"forum/common/xerr"
 
 	"github.com/jinzhu/copier"
@@ -29,7 +29,7 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 }
 
 func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err error) {
-	logResp, err := l.svcCtx.UserRpc.Login(l.ctx, &pb.LoginRequest{
+	logResp, err := l.svcCtx.UserRpc.Login(l.ctx, &userservice.LoginRequest{
 		Username: &req.Username,
 		Email:    &req.Email,
 		Phone:    &req.Phone,
