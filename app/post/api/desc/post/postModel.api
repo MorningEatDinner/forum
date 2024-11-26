@@ -12,6 +12,22 @@ type Post {
     UpdatedTime string `json:"updatedTime"`        // 更新时间
 }
 
+// 社区信息
+type Community {
+    CommunityId   int64  `json:"communityId"`
+    CommunityName string `json:"communityName"`
+    Introduction  string `json:"introduction,omitempty"`
+    CreateTime    string `json:"createTime"`
+    UpdatedTime   string `json:"updatedTime"`
+}
+
+type PostDetail {
+    AuthorName string `json:"authorName"`  
+    Post Post `json:"post"`                             // 帖子详情
+    Community Community `json:"community"`  
+    VotedNums int `json:"votedNums"`  
+}
+
 // 获取帖子列表
 type (
     GetPostListReq {
@@ -22,7 +38,7 @@ type (
     }
     GetPostListResp {
         Total int64 `json:"total"`                           // 总帖子数
-        Posts []Post `json:"posts"`                          // 帖子列表
+        Posts []PostDetail `json:"posts"`                          // 帖子列表
     }
 )
 
@@ -32,7 +48,7 @@ type (
         PostId int64 `path:"postId"`                        // 帖子ID
     }
     GetPostDetailResp {
-        Post Post `json:"post"`                             // 帖子详情
+        PostDetail PostDetail `json:"PostDetail"`  
     }
 )
 

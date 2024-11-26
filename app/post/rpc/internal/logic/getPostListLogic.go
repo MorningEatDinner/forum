@@ -28,3 +28,5 @@ func (l *GetPostListLogic) GetPostList(in *pb.GetPostListRequest) (*pb.GetPostLi
 
 	return &pb.GetPostListResponse{}, nil
 }
+
+// 版本1 ： 没有引入分数， 而是直接按照创建时间进行排序

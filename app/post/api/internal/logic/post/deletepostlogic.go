@@ -5,7 +5,10 @@ import (
 
 	"forum/app/post/api/internal/svc"
 	"forum/app/post/api/internal/types"
+	"forum/app/post/rpc/postservice"
+	"forum/common/ctxdata"
 
+	"github.com/jinzhu/copier"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -25,7 +28,18 @@ func NewDeletePostLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delete
 }
 
 func (l *DeletePostLogic) DeletePost(req *types.DeletePostReq) (resp *types.DeletePostResp, err error) {
-	// todo: add your logic here and delete this line
+	// 只有帖子的作者才可以删除帖子
+	userid := ctxdata.GetUidFromCtx(l.ctx)
+	delResp, err := l.svcCtx.PostRpc.DeletePost(l.ctx, &postservice.DeletePostRequest{
+		PostId:   req.PostId,
+		AuthorId: userid,
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("delete post failed, err: %v", err)
+		return nil, err
+	}
+	resp = &types.DeletePostResp{}
+	copier.Copy(resp, delResp)
 
 	return
 }

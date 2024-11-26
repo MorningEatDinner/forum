@@ -11,6 +11,7 @@ func init() {
 	message[TOKEN_GENERATE_ERROR] = "生成token失败"
 	message[DB_ERROR] = "数据库繁忙,请稍后再试"
 	message[DB_UPDATE_AFFECTED_ZERO_ERROR] = "更新数据影响行数为0"
+	message[PERMISSION_DENIED] = "权限不足"
 
 	// 用户模块错误
 	message[USER_CAPTCHA_ERROR] = "验证码错误"

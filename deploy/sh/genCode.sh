@@ -2,6 +2,7 @@
 goctl api go -api ./app/user/api/desc/user.api -dir ./app/user/api
 goctl api go -api ./app/community/api/desc/community.api -dir ./app/community/api
 goctl api go -api ./app/post/api/desc/post.api -dir ./app/post/api
+goctl api go -api ./app/post/api/desc/post.api -dir ./tmp/app/post/api
 
 生成rpc文件 进入对应目录
 goctl rpc protoc ./app/user/rpc/pb/*.proto --go_out=./tmp/app/user/rpc --go-grpc_out=./tmp/app/user/rpc  --zrpc_out=./tmp/app/user/rpc --style=goZero

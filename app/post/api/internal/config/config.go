@@ -13,4 +13,5 @@ type Config struct {
 	}
 	PostRpcConf      zrpc.RpcClientConf
 	CommunityRpcConf zrpc.RpcClientConf
+	UserRpcConf      zrpc.RpcClientConf
 }
