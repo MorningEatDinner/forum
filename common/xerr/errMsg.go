@@ -18,6 +18,9 @@ func init() {
 	message[USER_PASSWORD_ERROR] = "密码错误"
 	message[USER_NAME_EXISTS_ERROR] = "用户名已存在"
 	message[USER_PASSWORD_DISMATCH_ERROR] = "两次密码输入不一致"
+
+	// 社区模块错误
+	message[COMMUNITY_NAME_EXIST] = "社区名称已存在"
 }
 
 func MapErrMsg(errcode uint32) string {

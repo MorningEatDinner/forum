@@ -1,0 +1,68 @@
+syntax = "v1"
+
+type (
+    // Request/Response definitions
+    CreateCommunityReq {
+        CommunityName string `json:"communityName"`
+        Introduction  string `json:"introduction,optional"`
+    }
+
+    CreateCommunityResp {
+        CommunityId int64 `json:"communityId"`
+    }
+
+    GetAllCommunitiesReq {
+        Page     int `form:"page,optional,default=1"`
+        PageSize int `form:"pageSize,optional,default=10"`
+    }
+
+    GetAllCommunitiesResp {
+        Total       int64       `json:"total"`
+        Communities []Community `json:"communities"`
+    }
+
+    GetCommunityDetailsReq {
+        CommunityId int64 `form:"communityId"`
+    }
+
+    GetCommunityDetailsResp {
+        Community Community `json:"community"`
+    }
+
+    GetCommunityPostsReq {
+        CommunityId int64 `form:"communityId"`
+        Page        int   `form:"page,optional,default=1"`
+        PageSize    int   `form:"pageSize,optional,default=10"`
+    }
+
+    GetCommunityPostsResp {
+        Total int64  `json:"total"`
+        Posts []Post `json:"posts"`
+    }
+
+    UpdateCommunityReq {
+        CommunityId   int64  `json:"communityId"`
+        CommunityName string `json:"communityName,optional"`
+        Introduction  string `json:"introduction,optional"`
+    }
+
+    UpdateCommunityResp {
+        CommunityId int64 `json:"communityId"`
+    }
+
+    // Model definitions
+    Community {
+        CommunityId   int64  `json:"communityId"`
+        CommunityName string `json:"communityName"`
+        Introduction  string `json:"introduction,omitempty"`
+        CreateTime    string `json:"createTime"`
+        UpdatedTime   string `json:"updatedTime"`
+    }
+
+    Post {
+        Id        int64  `json:"id"`
+        Title     string `json:"title"`
+        Content   string `json:"content"`
+        CreatedAt string `json:"createdAt"`
+    }
+)

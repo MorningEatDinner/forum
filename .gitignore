@@ -8,3 +8,5 @@ data/
 tmp/
 app/user/rpc/etc/user.yaml
 app/user/api/etc/usercenter.yaml
+app/community/rpc/etc/community.yaml
+app/community/api/etc/community.yaml

@@ -25,7 +25,6 @@ func NewRefreshTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Refr
 }
 
 func (l *RefreshTokenLogic) RefreshToken(req *types.RefreshTokenReq) (resp *types.RefreshTokenResp, err error) {
-	// todo: add your logic here and delete this line
-
+	//  使用jwt的中间件， 如果过期了这里就无法得到了， 所以这里还是得设置为refreshafter这样比较合理。 后面再来更新吧
 	return
 }

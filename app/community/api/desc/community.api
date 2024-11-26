@@ -1,0 +1,49 @@
+syntax = "v1"
+
+info (
+	title:   "社区"
+	desc:    "社区"
+	author:  "morningeatdinner"
+	email:   "1298453249@qq.com"
+	version: "v1"
+)
+
+import (
+	"community/communityModel.api"
+)
+
+//public endpoints
+@server (
+	prefix: community/v1
+	group:  public
+)
+service community {
+	@doc "get all communities"
+	@handler getAllCommunities
+	get /all (GetAllCommunitiesReq) returns (GetAllCommunitiesResp)
+
+	@doc "get community details"
+	@handler getCommunityDetails
+	get /details/:id (GetCommunityDetailsReq) returns (GetCommunityDetailsResp)
+
+	@doc "get all posts in a community"
+	@handler getCommunityPosts
+	get /posts/:id (GetCommunityPostsReq) returns (GetCommunityPostsResp)
+}
+
+//authenticated endpoints
+@server (
+	prefix: community/v1
+	group:  admin
+	jwt:    JwtAuth
+)
+service community {
+	@doc "update community details"
+	@handler updateCommunity
+	post /update/:id (UpdateCommunityReq) returns (UpdateCommunityResp)
+
+	@doc "create a new community"
+	@handler createCommunity
+	post /create (CreateCommunityReq) returns (CreateCommunityResp)
+}
+
