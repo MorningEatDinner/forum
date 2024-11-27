@@ -1,0 +1,65 @@
+// voteModel.api
+syntax = "v1"
+
+// 投票记录
+type VoteRecord {
+    VoteId     int64  `json:"voteId"`     // 投票记录ID
+    PostId     int64  `json:"postId"`     // 帖子ID
+    UserId     int64  `json:"userId"`     // 用户ID
+    VoteType   int32  `json:"voteType"`   // 投票类型 0: 赞成票, 1: 反对票
+    CreateTime string `json:"createTime"` // 创建时间
+    UpdatedTime string `json:"updatedTime"` // 更新时间
+}
+
+// 投票计数
+type VoteCount {
+    PostId      int64  `json:"postId"`      // 帖子ID
+    AgreeCount  int32  `json:"agreeCount"`  // 赞成票数
+    OpposeCount int32  `json:"opposeCount"` // 反对票数
+    CreateTime  string `json:"createTime"`  // 创建时间
+    UpdatedTime string `json:"updatedTime"` // 更新时间
+}
+
+// 获取投票计数
+type (
+    GetVoteCountReq {
+        PostId int64 `path:"postId"` // 帖子ID
+    }
+    GetVoteCountResp {
+        VoteCount VoteCount `json:"voteCount"` // 投票计数
+    }
+)
+
+// 获取用户投票记录
+type (
+    GetUserVoteReq {
+        PostId int64 `path:"postId"` // 帖子ID
+        UserId int64 `path:"userId"` // 用户ID
+    }
+    GetUserVoteResp {
+        VoteRecord VoteRecord `json:"voteRecord"` // 用户的投票记录
+    }
+)
+
+// 为帖子投票
+type (
+    VotePostReq {
+        PostId   int64 `json:"postId"`   // 帖子ID
+        UserId   int64 `json:"userId"`   // 用户ID
+        VoteType int32 `json:"voteType"` // 投票类型 0: 赞成票, 1: 反对票
+    }
+    VotePostResp {
+        Success bool `json:"success"` // 投票是否成功
+    }
+)
+
+// 撤销用户投票
+type (
+    RevokeVoteReq {
+        PostId int64 `path:"postId"` // 帖子ID
+        UserId int64 `path:"userId"` // 用户ID
+    }
+    RevokeVoteResp {
+        Success bool `json:"success"` // 撤销投票是否成功
+    }
+)

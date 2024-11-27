@@ -14,5 +14,6 @@ app/post/rpc/etc/post.yaml
 app/post/api/etc/post.yaml
 app/comment/rpc/etc/comment.yaml
 app/comment/api/etc/comment.yaml
-app/vote/rpc/etc/vote.yaml
+app/vote/rpc/etc/votecenter.yaml
 app/vote/api/etc/vote.yaml
+.VSCodeCounter

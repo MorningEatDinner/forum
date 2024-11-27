@@ -1,0 +1,14 @@
+Name: vote-rpc
+ListenOn: 0.0.0.0:3005
+Mode: dev
+
+Redis:
+  Host: localhost:26379
+  Type: node
+  Pass: G62m50oigInC30sf
+  Key: vote-rpc
+DB:
+  DataSource: root:PXDN93VRKUm8TeE7@tcp(localhost:23069)/vote?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+Cache:
+  - Host: localhost:26379
+    Pass: G62m50oigInC30sf

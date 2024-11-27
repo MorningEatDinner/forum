@@ -1,0 +1,46 @@
+// vote.api
+syntax = "v1"
+
+info (
+	title:   "投票服务"
+	desc:    "投票服务"
+	author:  "morningeatdinner"
+	email:   "1298453249@qq.com"
+	version: "v1"
+)
+
+import (
+	"vote/voteModel.api"
+)
+
+// public endpoints
+@server (
+	prefix: vote/v1
+	group:  public
+)
+service votecenter {
+	@doc "获取帖子投票信息"
+	@handler getVoteCount
+	get /votes/:postId (GetVoteCountReq) returns (GetVoteCountResp)
+}
+
+// authenticated endpoints
+@server (
+	prefix: vote/v1
+	group:  vote
+	jwt:    JwtAuth
+)
+service votecenter {
+	@doc "获取用户对帖子投票的记录"
+	@handler getUserVote
+	get /votes/:postId/user/:userId (GetUserVoteReq) returns (GetUserVoteResp)
+
+	@doc "为帖子投票"
+	@handler votePost
+	post /votes (VotePostReq) returns (VotePostResp)
+
+	@doc "撤销用户对帖子的投票"
+	@handler revokeVote
+	delete /votes/:postId/user/:userId (RevokeVoteReq) returns (RevokeVoteResp)
+}
+
