@@ -1,0 +1,32 @@
+// commentModel.api
+syntax = "v1"
+
+// 评论信息
+type Comment {
+    CommentId   int64  `json:"commentId"`   // 评论ID
+    PostId      int64  `json:"postId"`      // 所属帖子ID
+    AuthorId    int64  `json:"authorId"`    // 作者ID
+    Content     string `json:"content"`     // 评论内容
+    CreateTime  string `json:"createTime"`  // 创建时间
+    UpdatedTime string `json:"updatedTime"` // 更新时间
+}
+
+// 创建评论请求
+type (
+    CreateCommentReq {
+        PostId  int64  `json:"postId"`  // 所属帖子ID
+        Content string `json:"content"` // 评论内容
+    }
+    CreateCommentResp {
+        Comment Comment `json:"comment"` // 创建的评论信息
+    }
+)
+
+// 删除评论请求
+type (
+    DeleteCommentReq {
+        CommentId int64 `path:"commentId"` // 要删除的评论ID
+    }
+    DeleteCommentResp {
+    }
+)

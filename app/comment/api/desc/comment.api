@@ -1,0 +1,31 @@
+// comment.api
+syntax = "v1"
+
+info (
+	title:   "评论服务"
+	desc:    "评论服务"
+	author:  "morningeatdinner"
+	email:   "1298453249@qq.com"
+	version: "v1"
+)
+
+import (
+	"comment/commentModel.api"
+)
+
+// 需要认证的端点
+@server (
+	prefix: comment/v1
+	group:  comment
+	jwt:    JwtAuth
+)
+service commentcenter {
+	@doc "创建评论"
+	@handler createComment
+	post /comments (CreateCommentReq) returns (CreateCommentResp)
+
+	@doc "删除评论"
+	@handler deleteComment
+	delete /comments/:commentId (DeleteCommentReq) returns (DeleteCommentResp)
+}
+

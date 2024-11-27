@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+package pb;
+
+// 评论服务
+service CommentService {
+  // 创建评论
+  rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse) {}
+
+  // 删除评论
+  rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse) {}
+}
+
+// 基础评论信息
+message Comment {
+  int64 commentId = 1;      // 评论ID
+  int64 postId = 2;         // 关联帖子ID
+  int64 authorId = 3;       // 关联用户ID
+  string content = 4;       // 评论内容
+  string createTime = 5;    // 创建时间
+  string updatedTime = 6;   // 更新时间
+}
+
+// 创建评论请求
+message CreateCommentRequest {
+  int64 postId = 1;          // 关联帖子ID
+  string content = 2;        // 评论内容
+  int64 authorId = 3;        // 作者ID（由API层通过JWT获取并传递）
+}
+
+// 创建评论响应
+message CreateCommentResponse {
+  Comment comment = 1;       // 创建的评论信息
+}
+
+// 删除评论请求
+message DeleteCommentRequest {
+  int64 commentId = 1;       // 要删除的评论ID
+}
+
+// 删除评论响应
+message DeleteCommentResponse {
+}
