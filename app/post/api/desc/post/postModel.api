@@ -29,6 +29,16 @@ type PostDetail {
     VotedNums int `json:"votedNums"`  
 }
 
+// 评论信息
+type Comment {
+    CommentId   int64  `json:"commentId"`   // 评论ID
+    PostId      int64  `json:"postId"`      // 所属帖子ID
+    AuthorId    int64  `json:"authorId"`    // 作者ID
+    Content     string `json:"content"`     // 评论内容
+    CreateTime  string `json:"createTime"`  // 创建时间
+    UpdatedTime string `json:"updatedTime"` // 更新时间
+}
+
 // 获取帖子列表
 type (
     GetPostListReq {
@@ -71,5 +81,18 @@ type (
         PostId int64 `path:"postId"`                       // 要删除的帖子ID
     }
     DeletePostResp {
+    }
+)
+
+// 获取评论列表
+type (
+    GetCommentListReq {
+        PostId int64 `path:"postId"`                        // 帖子ID
+        Page int64 `form:"page,optional,default=1"`         // 页码
+        PageSize int64 `form:"pageSize,optional,default=10"`// 每页数量
+    }
+    GetCommentListResp {
+        Total int64 `json:"total"`                           // 总评论数
+        Comments []Comment `json:"comments"`                 // 评论列表
     }
 )

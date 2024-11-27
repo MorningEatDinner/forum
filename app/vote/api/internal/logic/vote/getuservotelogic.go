@@ -24,6 +24,7 @@ func NewGetUserVoteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 	}
 }
 
+// 接口无需实现， rpc实现
 func (l *GetUserVoteLogic) GetUserVote(req *types.GetUserVoteReq) (resp *types.GetUserVoteResp, err error) {
 	// todo: add your logic here and delete this line
 

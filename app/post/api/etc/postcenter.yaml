@@ -21,3 +21,8 @@ UserRpcConf:
   Endpoints:
     - 127.0.0.1:3001
   NonBlock: true
+
+CommentRpcConf:
+  Endpoints:
+    - 127.0.0.1:3004
+  NonBlock: true

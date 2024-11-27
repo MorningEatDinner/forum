@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"forum/app/comment/rpc/commentservice"
 	"forum/app/community/rpc/communityservice"
 	"forum/app/post/api/internal/config"
 	"forum/app/post/rpc/postservice"
@@ -15,6 +16,7 @@ type ServiceContext struct {
 	PostRpc      postservice.PostService
 	CommunityRpc communityservice.CommunityService
 	UserRpc      userservice.UserService
+	CommentRpc   commentservice.CommentService
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -23,5 +25,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		PostRpc:      postservice.NewPostService(zrpc.MustNewClient(c.PostRpcConf)),
 		CommunityRpc: communityservice.NewCommunityService(zrpc.MustNewClient(c.CommunityRpcConf)),
 		UserRpc:      userservice.NewUserService(zrpc.MustNewClient(c.UserRpcConf)),
+		CommentRpc:   commentservice.NewCommentService(zrpc.MustNewClient(c.CommentRpcConf)),
 	}
 }

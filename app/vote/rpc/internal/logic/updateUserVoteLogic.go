@@ -23,6 +23,7 @@ func NewUpdateUserVoteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Up
 	}
 }
 
+// 这个接口废除， 直接使用 投票接口
 func (l *UpdateUserVoteLogic) UpdateUserVote(in *pb.UpdateUserVoteRequest) (*pb.UpdateUserVoteResponse, error) {
 	// todo: add your logic here and delete this line
 

@@ -31,6 +31,7 @@ type (
 		FindOne(ctx context.Context, commentId int64) (*Comments, error)
 		Update(ctx context.Context, data *Comments) error
 		Delete(ctx context.Context, commentId int64) error
+		FindCommentListByPostId(ctx context.Context, postId int64, page, pageSize int64) ([]*Comments, error)
 	}
 
 	defaultCommentsModel struct {
@@ -110,4 +111,30 @@ func (m *defaultCommentsModel) queryPrimary(ctx context.Context, conn sqlx.SqlCo
 
 func (m *defaultCommentsModel) tableName() string {
 	return m.table
+}
+
+
+
+func (m *defaultCommentsModel) FindCommentListByPostId(ctx context.Context, postId int64, page, pageSize int64) ([]*Comments, error) {
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 {
+		pageSize = 10
+	}
+	offset := (page - 1) * pageSize
+
+	var comments []*Comments
+	query := fmt.Sprintf("select %s from %s where post_id = ? order by create_time desc limit ?, ?", 
+		commentsRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &comments, query, postId, offset, pageSize)
+	
+	switch err {
+	case nil:
+		return comments, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
 }

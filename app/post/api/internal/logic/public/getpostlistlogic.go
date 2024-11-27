@@ -63,7 +63,6 @@ func (l *GetPostListLogic) GetPostList(req *types.GetPostListReq) (resp *types.G
 		logx.WithContext(l.ctx).Errorf("get post list failed, err: %v", err)
 		return nil, err
 	}
-
 	resp = &types.GetPostListResp{}
 	copier.Copy(resp, listResp)
 

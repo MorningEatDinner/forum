@@ -24,6 +24,7 @@ func NewRevokeVoteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Revoke
 	}
 }
 
+// 直接调用投票接口就行， 投0就是撤销
 func (l *RevokeVoteLogic) RevokeVote(req *types.RevokeVoteReq) (resp *types.RevokeVoteResp, err error) {
 	// todo: add your logic here and delete this line
 

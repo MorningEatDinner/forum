@@ -26,6 +26,10 @@ service postcenter {
 	@doc "获取帖子详情"
 	@handler getPostDetail
 	get /posts/:postId (GetPostDetailReq) returns (GetPostDetailResp)
+
+	@doc "获取评论列表"
+	@handler getCommentList
+	get /posts/:postId/comments (GetCommentListReq) returns (GetCommentListResp)
 }
 
 // authenticated endpoints

@@ -24,6 +24,7 @@ func NewGetVoteCountLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetV
 	}
 }
 
+// rpc实现就好
 func (l *GetVoteCountLogic) GetVoteCount(req *types.GetVoteCountReq) (resp *types.GetVoteCountResp, err error) {
 	// todo: add your logic here and delete this line
 

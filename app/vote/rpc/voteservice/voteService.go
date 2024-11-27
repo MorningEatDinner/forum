@@ -6,7 +6,7 @@ package voteservice
 import (
 	"context"
 
-	"forum/tmp/app/vote/rpc/pb"
+	"forum/app/vote/rpc/pb"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"

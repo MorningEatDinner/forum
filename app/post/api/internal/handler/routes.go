@@ -45,6 +45,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/posts/:postId",
 				Handler: public.GetPostDetailHandler(serverCtx),
 			},
+			{
+				// 获取评论列表
+				Method:  http.MethodGet,
+				Path:    "/posts/:postId/comments",
+				Handler: public.GetCommentListHandler(serverCtx),
+			},
 		},
 		rest.WithPrefix("/post/v1"),
 	)

@@ -6,28 +6,28 @@ package commentservice
 import (
 	"context"
 
-	"forum/tmp/app/comment/rpc/pb"
+	"forum/app/comment/rpc/pb"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
 )
 
 type (
-	Comment               = pb.Comment
-	CreateCommentRequest  = pb.CreateCommentRequest
-	CreateCommentResponse = pb.CreateCommentResponse
-	DeleteCommentRequest  = pb.DeleteCommentRequest
-	DeleteCommentResponse = pb.DeleteCommentResponse
-	GetCommentRequest     = pb.GetCommentRequest
-	GetCommentResponse    = pb.GetCommentResponse
+	Comment                   = pb.Comment
+	CreateCommentRequest      = pb.CreateCommentRequest
+	CreateCommentResponse     = pb.CreateCommentResponse
+	DeleteCommentRequest      = pb.DeleteCommentRequest
+	DeleteCommentResponse     = pb.DeleteCommentResponse
+	GetCommentsByPostRequest  = pb.GetCommentsByPostRequest
+	GetCommentsByPostResponse = pb.GetCommentsByPostResponse
 
 	CommentService interface {
 		// 创建评论
 		CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CreateCommentResponse, error)
 		// 删除评论
 		DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error)
-		// 获取评论
-		GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error)
+		// 根据帖子ID获取评论
+		GetCommentsByPost(ctx context.Context, in *GetCommentsByPostRequest, opts ...grpc.CallOption) (*GetCommentsByPostResponse, error)
 	}
 
 	defaultCommentService struct {
@@ -53,8 +53,8 @@ func (m *defaultCommentService) DeleteComment(ctx context.Context, in *DeleteCom
 	return client.DeleteComment(ctx, in, opts...)
 }
 
-// 获取评论
-func (m *defaultCommentService) GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error) {
+// 根据帖子ID获取评论
+func (m *defaultCommentService) GetCommentsByPost(ctx context.Context, in *GetCommentsByPostRequest, opts ...grpc.CallOption) (*GetCommentsByPostResponse, error) {
 	client := pb.NewCommentServiceClient(m.cli.Conn())
-	return client.GetComment(ctx, in, opts...)
+	return client.GetCommentsByPost(ctx, in, opts...)
 }

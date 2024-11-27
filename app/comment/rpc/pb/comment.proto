@@ -12,8 +12,8 @@ service CommentService {
   // 删除评论
   rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse) {}
 
-  // 获取评论
-  rpc GetComment(GetCommentRequest) returns (GetCommentResponse) {}
+  // 根据帖子ID获取评论
+  rpc GetCommentsByPost(GetCommentsByPostRequest) returns (GetCommentsByPostResponse) {}
 }
 
 // 基础评论信息
@@ -48,12 +48,15 @@ message DeleteCommentRequest {
 message DeleteCommentResponse {
 }
 
-// 获取评论请求
-message GetCommentRequest {
-  int64 commentId = 1;       // 要获取的评论ID
+// 根据帖子ID获取评论请求
+message GetCommentsByPostRequest {
+  int64 postId = 1;           // 要获取评论的帖子ID
+  int32 page = 2;             // 页码（可选，用于分页）
+  int32 pageSize = 3;         // 每页数量（可选，用于分页）
 }
 
-// 获取评论响应
-message GetCommentResponse {
-  Comment comment = 1;       // 获取到的评论信息
+// 根据帖子ID获取评论响应
+message GetCommentsByPostResponse {
+  int64 total = 1;                  // 评论总数
+  repeated Comment comments = 2;    // 获取到的评论列表
 }

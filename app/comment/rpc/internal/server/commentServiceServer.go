@@ -33,3 +33,8 @@ func (s *CommentServiceServer) DeleteComment(ctx context.Context, in *pb.DeleteC
 	l := logic.NewDeleteCommentLogic(ctx, s.svcCtx)
 	return l.DeleteComment(in)
 }
+// 根据帖子ID获取评论
+func (s *CommentServiceServer) GetCommentsByPost(ctx context.Context, in *pb.GetCommentsByPostRequest) (*pb.GetCommentsByPostResponse, error) {
+	l := logic.NewGetCommentsByPostLogic(ctx, s.svcCtx)
+	return l.GetCommentsByPost(in)
+}
