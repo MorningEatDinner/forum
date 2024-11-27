@@ -10,6 +10,7 @@ type Post {
     Content string `json:"content"`                 // 帖子内容
     CreateTime string `json:"createTime"`          // 创建时间
     UpdatedTime string `json:"updatedTime"`        // 更新时间
+    Score int64 `json:"score"` // 帖子的分数
 }
 
 // 社区信息

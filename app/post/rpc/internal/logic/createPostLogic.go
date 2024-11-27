@@ -33,6 +33,7 @@ func (l *CreatePostLogic) CreatePost(in *pb.CreatePostRequest) (*pb.CreatePostRe
 		Content:     in.Content,
 		CreateTime:  time.Now(),
 		UpdatedTime: time.Now(),
+		Score:       time.Now().Unix(),
 	}
 	insertRes, err := l.svcCtx.PostModel.Insert(l.ctx, post)
 	if err != nil {

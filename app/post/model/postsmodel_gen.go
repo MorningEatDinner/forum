@@ -49,6 +49,7 @@ type (
 		Content     string    `db:"content"`      // 帖子内容
 		CreateTime  time.Time `db:"create_time"`  // 创建时间
 		UpdatedTime time.Time `db:"updated_time"` // 更新时间
+		Score       int64     `db:"score"`        // 帖子分数
 	}
 )
 
@@ -88,8 +89,8 @@ func (m *defaultPostsModel) FindOne(ctx context.Context, postId int64) (*Posts, 
 func (m *defaultPostsModel) Insert(ctx context.Context, data *Posts) (sql.Result, error) {
 	postsPostIdKey := fmt.Sprintf("%s%v", cachePostsPostIdPrefix, data.PostId)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, postsRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.AuthorId, data.CommunityId, data.Title, data.Content, data.UpdatedTime)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?)", m.table, postsRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.AuthorId, data.CommunityId, data.Title, data.Content, data.UpdatedTime, data.Score)
 	}, postsPostIdKey)
 	return ret, err
 }
@@ -98,7 +99,7 @@ func (m *defaultPostsModel) Update(ctx context.Context, data *Posts) error {
 	postsPostIdKey := fmt.Sprintf("%s%v", cachePostsPostIdPrefix, data.PostId)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `post_id` = ?", m.table, postsRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.AuthorId, data.CommunityId, data.Title, data.Content, data.UpdatedTime, data.PostId)
+		return conn.ExecCtx(ctx, query, data.AuthorId, data.CommunityId, data.Title, data.Content, data.UpdatedTime, data.Score, data.PostId)
 	}, postsPostIdKey)
 	return err
 }
@@ -115,7 +116,6 @@ func (m *defaultPostsModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn,
 func (m *defaultPostsModel) tableName() string {
 	return m.table
 }
-
 func (m *defaultPostsModel) FindAll(ctx context.Context, page int64, size int64) ([]*Posts, error) {
 	var resp []*Posts
 	offset := (page - 1) * size

@@ -21,6 +21,7 @@ message Post {
     string content = 5;          // 帖子内容
     string createTime = 6;       // 创建时间
     string updatedTime = 7;      // 更新时间
+    int64 score = 8; // 帖子分数
 }
 
 message CreatePostRequest {
@@ -28,6 +29,7 @@ message CreatePostRequest {
     int64 communityId = 2;       // 社区ID
     string title = 3;            // 帖子标题
     string content = 4;          // 帖子内容
+    int64 score = 5; // 帖子分数
 }
 
 message CreatePostResponse {

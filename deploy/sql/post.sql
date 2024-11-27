@@ -6,7 +6,7 @@ CREATE TABLE posts (
     content      LONGTEXT NOT NULL COMMENT '帖子内容',
     create_time  DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
     updated_time DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '更新时间',
-    
+    score BIGINT DEFAULT 0 COMMENT '帖子分数',
     PRIMARY KEY(post_id),
     INDEX idx_community (community_id, create_time) COMMENT '社区帖子索引',
     INDEX idx_author (author_id, create_time) COMMENT '作者帖子索引'

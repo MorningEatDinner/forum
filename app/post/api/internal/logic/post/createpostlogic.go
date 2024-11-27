@@ -54,7 +54,6 @@ func (l *CreatePostLogic) CreatePost(req *types.CreatePostReq) (resp *types.Crea
 		logx.WithContext(l.ctx).Errorf("create post failed, err: %v", err)
 		return nil, errors.Wrapf(xerr.NewErrMsg("create post failed"), "create post failed")
 	}
-	// TODO: 创建完成帖子之后，还要给当前的帖子设置一个分数， 这个后面参考那个beyond项目来完成
 
 	resp = &types.CreatePostResp{}
 	copier.Copy(resp, createResp)

@@ -11,6 +11,9 @@ service CommentService {
 
   // 删除评论
   rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse) {}
+
+  // 获取评论
+  rpc GetComment(GetCommentRequest) returns (GetCommentResponse) {}
 }
 
 // 基础评论信息
@@ -38,8 +41,19 @@ message CreateCommentResponse {
 // 删除评论请求
 message DeleteCommentRequest {
   int64 commentId = 1;       // 要删除的评论ID
+  int64 authorId = 2;        // 作者ID（由API层通过JWT获取并传递）
 }
 
 // 删除评论响应
 message DeleteCommentResponse {
+}
+
+// 获取评论请求
+message GetCommentRequest {
+  int64 commentId = 1;       // 要获取的评论ID
+}
+
+// 获取评论响应
+message GetCommentResponse {
+  Comment comment = 1;       // 获取到的评论信息
 }

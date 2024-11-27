@@ -6,7 +6,7 @@ package postservice
 import (
 	"context"
 
-	"forum/app/post/rpc/pb"
+	"forum/tmp/app/post/rpc/pb"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"

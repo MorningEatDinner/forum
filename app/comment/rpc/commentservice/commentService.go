@@ -18,12 +18,16 @@ type (
 	CreateCommentResponse = pb.CreateCommentResponse
 	DeleteCommentRequest  = pb.DeleteCommentRequest
 	DeleteCommentResponse = pb.DeleteCommentResponse
+	GetCommentRequest     = pb.GetCommentRequest
+	GetCommentResponse    = pb.GetCommentResponse
 
 	CommentService interface {
 		// 创建评论
 		CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CreateCommentResponse, error)
 		// 删除评论
 		DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error)
+		// 获取评论
+		GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error)
 	}
 
 	defaultCommentService struct {
@@ -47,4 +51,10 @@ func (m *defaultCommentService) CreateComment(ctx context.Context, in *CreateCom
 func (m *defaultCommentService) DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error) {
 	client := pb.NewCommentServiceClient(m.cli.Conn())
 	return client.DeleteComment(ctx, in, opts...)
+}
+
+// 获取评论
+func (m *defaultCommentService) GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error) {
+	client := pb.NewCommentServiceClient(m.cli.Conn())
+	return client.GetComment(ctx, in, opts...)
 }

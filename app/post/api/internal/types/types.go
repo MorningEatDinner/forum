@@ -41,10 +41,9 @@ type GetPostListReq struct {
 	AuthorId    int64 `form:"authorId,optional"`            // 按作者筛选
 }
 
-// 修改了为Post， 而不是PostDetail
 type GetPostListResp struct {
 	Total int64        `json:"total"` // 总帖子数
-	Posts []Post `json:"posts"` // 帖子列表
+	Posts []PostDetail `json:"posts"` // 帖子列表
 }
 
 type Post struct {
@@ -55,6 +54,7 @@ type Post struct {
 	Content     string `json:"content"`     // 帖子内容
 	CreateTime  string `json:"createTime"`  // 创建时间
 	UpdatedTime string `json:"updatedTime"` // 更新时间
+	Score       int64  `json:"score"`       // 帖子的分数
 }
 
 type PostDetail struct {
