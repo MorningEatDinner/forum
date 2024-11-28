@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	TemplateHTML = `
+	TemplateHTMLCode = `
 	<!DOCTYPE html>
 	<html>
 	<head>
@@ -27,6 +27,28 @@ const (
 
 	TemplateText = `验证码：%s
 	验证码 10 分钟内有效，请勿泄露给他人。`
+
+	TemplateHTMLProfileUpdate = `
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<meta charset="utf-8">
+		<title>个人信息更新提醒</title>
+	</head>
+	<body>
+		<div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+			<h2 style="color: #333;">温馨提示</h2>
+			<p>亲爱的 %s：</p>
+			<div style="background: #f4f4f4; padding: 15px; margin: 20px 0; line-height: 1.6;">
+				<p>我们注意到您已注册成为我们的用户一天了，但您的个人信息还未完善。</p>
+				<p>完整的个人信息有助于我们为您提供更好的服务体验。</p>
+				<p>请尽快登录系统完善您的个人信息。</p>
+			</div>
+			<p style="color: #666; font-size: 14px;">如果您已经更新了信息，请忽略此邮件。</p>
+			<p style="color: #666; font-size: 14px;">感谢您的支持！</p>
+		</div>
+	</body>
+	</html>`
 )
 
 type From struct {

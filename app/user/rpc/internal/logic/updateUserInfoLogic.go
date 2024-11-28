@@ -3,10 +3,14 @@ package logic
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"strconv"
+	"time"
 
 	"forum/app/user/model"
 	"forum/app/user/rpc/internal/svc"
 	"forum/app/user/rpc/pb"
+	"forum/common/globalkey"
 	"forum/common/xerr"
 
 	"github.com/jinzhu/copier"
@@ -56,6 +60,12 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(in *pb.UpdateUserInfoRequest) (*pb.
 
 	// 4. 写回数据库
 	err = l.svcCtx.UserModel.Update(l.ctx, user)
+	if err != nil {
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "db error: %v", err)
+	}
+
+	// 5. 更新用户状态为已经更新信息
+	err = l.svcCtx.RedisClient.Setex(fmt.Sprintf(globalkey.GetRedisKey(globalkey.UpdatedKey), strconv.FormatInt(in.UserId, 10)), "1", 24*int(time.Hour.Seconds()))
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "db error: %v", err)
 	}

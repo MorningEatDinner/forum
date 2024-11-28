@@ -8,6 +8,9 @@ const (
 	CaptchaKey   = "captcha:%v"
 	PhoneCodeKey = "phone_code:%v"
 	EmailCodeKey = "email_code:%v"
+
+	// 更新表示
+	UpdatedKey = "user_profile_status:%v"
 )
 
 // 给key加上前缀

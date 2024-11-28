@@ -3,9 +3,11 @@ package logic
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"time"
 
+	"forum/app/mqueue/cmd/job/jobtype"
 	"forum/app/user/model"
 	"forum/app/user/rpc/internal/svc"
 	"forum/app/user/rpc/pb"
@@ -13,6 +15,7 @@ import (
 	"forum/common/tool"
 	"forum/common/xerr"
 
+	"github.com/hibiken/asynq"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -30,6 +33,8 @@ func NewRegisterByEmailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *R
 		Logger: logx.WithContext(ctx),
 	}
 }
+
+const NotifyUserUpdateTimeHours = 24
 
 func (l *RegisterByEmailLogic) RegisterByEmail(in *pb.RegisterByEmailRequest) (*pb.RegisterByEmailResponse, error) {
 	// 1. 验证验证码是否正确
@@ -95,6 +100,24 @@ func (l *RegisterByEmailLogic) RegisterByEmail(in *pb.RegisterByEmailRequest) (*
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("failed to generate token for userId: %d, err: %v", id, err)
 		return nil, errors.Wrapf(xerr.NewErrMsg("failed to generate token for userId"), "failed to generate token for userId: %d", id)
+	}
+
+	// 启动延迟任务
+	payload, err := json.Marshal(jobtype.DeferNotifyUserPayload{
+		UserId:   id,
+		Email:    user.Email,
+		UserName: user.Username,
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("failed to marshal payload for userId: %d, err: %v", id, err)
+		return nil, errors.Wrapf(xerr.NewErrMsg("failed to marshal payload for userId"), "failed to marshal payload for userId: %d", id)
+	}
+
+	// 投递消息
+	_, err = l.svcCtx.AsynqClient.Enqueue(asynq.NewTask(jobtype.DeferEmailNotifyJob, payload), asynq.ProcessIn(time.Second*NotifyUserUpdateTimeHours))
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("failed to enqueue task for userId: %d, err: %v", id, err)
+		return nil, errors.Wrapf(xerr.NewErrMsg("failed to enqueue task for userId"), "failed to enqueue task for userId: %d", id)
 	}
 
 	return &pb.RegisterByEmailResponse{

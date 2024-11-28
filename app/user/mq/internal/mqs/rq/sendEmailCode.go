@@ -52,7 +52,7 @@ func (l *SendEmailCodeMq) execService(message mq.SendEmailCodeMessage) error {
 		},
 		To:      []string{message.Email}, // 收件人地址
 		Subject: "Forum 论坛验证码",           // 主题
-		HTML:    []byte(fmt.Sprintf(mail.TemplateHTML, message.Code)),
+		HTML:    []byte(fmt.Sprintf(mail.TemplateHTMLCode, message.Code)),
 	}
 	res := l.svcCtx.MailClient.Send(l.ctx, email)
 	if !res {
