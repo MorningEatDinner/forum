@@ -7,6 +7,7 @@ const (
 	// 验证码
 	CaptchaKey   = "captcha:%v"
 	PhoneCodeKey = "phone_code:%v"
+	EmailCodeKey = "email_code:%v"
 )
 
 // 给key加上前缀

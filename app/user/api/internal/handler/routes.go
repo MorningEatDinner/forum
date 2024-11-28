@@ -76,6 +76,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: public.LoginHandler(serverCtx),
 			},
 			{
+				// get email verification code
+				Method:  http.MethodPost,
+				Path:    "/email-code",
+				Handler: public.GetEmailCodeHandler(serverCtx),
+			},
+			{
 				// get mobile verification code
 				Method:  http.MethodPost,
 				Path:    "/mobile-code",
@@ -86,6 +92,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/register",
 				Handler: public.RegisterHandler(serverCtx),
+			},
+			{
+				// register by email
+				Method:  http.MethodPost,
+				Path:    "/register-by-email",
+				Handler: public.RegisterByEmailHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/user/v1"),

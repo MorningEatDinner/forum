@@ -1,151 +1,176 @@
-syntax = "proto3";
+  syntax = "proto3";
 
-option go_package = "./pb";
+  option go_package = "./pb";
 
-package pb;
+  package pb;
 
-service UserService {
-  rpc CheckMobile(CheckMobileRequest) returns (CheckMobileResponse) {}
-  rpc GetCaptcha(CaptchaRequest) returns (CaptchaResponse) {}
-  rpc GetMobileCode(GetMobileCodeRequest) returns (GetMobileCodeResponse) {}
-  rpc Register(RegisterRequest) returns (RegisterResponse) {}
-  rpc Login(LoginRequest) returns (LoginResponse) {}
-  rpc GenerateToken(GenerateTokenReq) returns (GenerateTokenResp) {}
-  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
-  rpc GetUserDetail(UserInfoRequest) returns (UserInfoResponse) {}
-  rpc UpdateUserInfo(UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
-  rpc UpdateMobile(UpdateMobileRequest) returns (UpdateMobileResponse) {}
-  rpc UpdateEmail(UpdateEmailRequest) returns (UpdateEmailResponse) {}
-  rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse) {}
-}
+  service UserService {
+    rpc CheckMobile(CheckMobileRequest) returns (CheckMobileResponse) {}
+    rpc GetCaptcha(CaptchaRequest) returns (CaptchaResponse) {}
+    rpc GetMobileCode(GetMobileCodeRequest) returns (GetMobileCodeResponse) {}
+    rpc Register(RegisterRequest) returns (RegisterResponse) {}
+    rpc Login(LoginRequest) returns (LoginResponse) {}
+    rpc GenerateToken(GenerateTokenReq) returns (GenerateTokenResp) {}
+    rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
+    rpc GetUserDetail(UserInfoRequest) returns (UserInfoResponse) {}
+    rpc UpdateUserInfo(UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
+    rpc UpdateMobile(UpdateMobileRequest) returns (UpdateMobileResponse) {}
+    rpc UpdateEmail(UpdateEmailRequest) returns (UpdateEmailResponse) {}
+    rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse) {}
+    rpc RegisterByEmail(RegisterByEmailRequest) returns (RegisterByEmailResponse) {}
+    rpc GetEmailCode(GetEmailCodeRequest) returns (GetEmailCodeResponse) {}
+  }
 
-// 基础用户信息
-message User {
-  int64 userId = 1;
-  string username = 2;
-  string email = 3;
-  optional string phone = 4;
-  optional string city = 5;
-  optional string introduction = 6;
-  optional string avatar = 7;
-}
+  // 基础用户信息
+  message User {
+    int64 userId = 1;
+    string username = 2;
+    string email = 3;
+    optional string phone = 4;
+    optional string city = 5;
+    optional string introduction = 6;
+    optional string avatar = 7;
+  }
 
-message CheckMobileRequest {
-  string phone = 1;
-}
+  message CheckMobileRequest {
+    string phone = 1;
+  }
 
-message CheckMobileResponse {
-  bool exist = 1;
-}
+  message CheckMobileResponse {
+    bool exist = 1;
+  }
 
-message CaptchaRequest {
-}
+  message CaptchaRequest {
+  }
 
-message CaptchaResponse {
-  string captchaId = 1;
-  string imageBase64 = 2; // 改为string类型
-}
+  message CaptchaResponse {
+    string captchaId = 1;
+    string imageBase64 = 2; // 改为string类型
+  }
 
-message GetMobileCodeRequest {
-  string phone = 1;
-  string captchaId = 2;
-  string captchaCode = 3;
-}
+  message GetMobileCodeRequest {
+    string phone = 1;
+    string captchaId = 2;
+    string captchaCode = 3;
+  }
 
-message GetMobileCodeResponse {
-}
+  message GetMobileCodeResponse {
+  }
 
-message RegisterRequest {
-  optional string phone = 1;
-  string password = 2;
-  optional string code = 3;
-  string name = 4;
-  string password_confirm = 5; // 添加确认密码字段
-}
+  message RegisterRequest {
+    optional string phone = 1;
+    string password = 2;
+    optional string code = 3;
+    string name = 4;
+    string password_confirm = 5; // 添加确认密码字段
+  }
 
-message RegisterResponse {
-  string accessToken = 1;
-  string refreshToken = 2;
-  int64 expiresIn = 3;
-}
+  message RegisterResponse {
+    string accessToken = 1;
+    string refreshToken = 2;
+    int64 expiresIn = 3;
+  }
 
-message LoginRequest {
-  optional string username = 1;
-  optional string email = 2;
-  optional string phone = 3;
-  string password = 4;
-}
+  message LoginRequest {
+    optional string username = 1;
+    optional string email = 2;
+    optional string phone = 3;
+    string password = 4;
+  }
 
-message LoginResponse {
-  string accessToken = 1;
-  string refreshToken = 2;
-  int64 expiresIn = 3;
-}
+  message LoginResponse {
+    string accessToken = 1;
+    string refreshToken = 2;
+    int64 expiresIn = 3;
+  }
 
-message RefreshTokenRequest {
-  string accessToken = 1;
-  string refreshToken = 2;
-}
+  message RefreshTokenRequest {
+    string accessToken = 1;
+    string refreshToken = 2;
+  }
 
-message RefreshTokenResponse {
-  string accessToken = 1;
-  string refreshToken = 2;
-  int64 expiresIn = 3;
-}
+  message RefreshTokenResponse {
+    string accessToken = 1;
+    string refreshToken = 2;
+    int64 expiresIn = 3;
+  }
 
-message UserInfoRequest {
-  int64 userId = 1; // 添加获取用户信息所需的userId字段
-}
+  message UserInfoRequest {
+    int64 userId = 1; // 添加获取用户信息所需的userId字段
+  }
 
-message UserInfoResponse {
-  User user = 1;
-}
+  message UserInfoResponse {
+    User user = 1;
+  }
 
-message UpdateUserInfoRequest {
-  int64 userId = 1;
-  optional string username = 2;
-  optional string city = 3;
-  optional string introduction = 4;
-}
+  message UpdateUserInfoRequest {
+    int64 userId = 1;
+    optional string username = 2;
+    optional string city = 3;
+    optional string introduction = 4;
+  }
 
-message UpdateUserInfoResponse {
-  User user = 1;
-}
+  message UpdateUserInfoResponse {
+    User user = 1;
+  }
 
-message UpdateMobileRequest {
-  int64 userId = 1;
-  string newPhone = 2;
-  string code = 3;
-}
+  message UpdateMobileRequest {
+    int64 userId = 1;
+    string newPhone = 2;
+    string code = 3;
+  }
 
-message UpdateMobileResponse {
-  User user = 1;
-}
+  message UpdateMobileResponse {
+    User user = 1;
+  }
 
-message UpdateEmailRequest {
-  int64 userId = 1;
-  string email = 2;
-  string code = 3;
-}
+  message UpdateEmailRequest {
+    int64 userId = 1;
+    string email = 2;
+    string code = 3;
+  }
 
-message UpdateEmailResponse {
-  User user = 1;
-}
+  message UpdateEmailResponse {
+    User user = 1;
+  }
 
-message UpdatePasswordRequest {
-  int64 userId = 1;
-  string oldPassword = 2;
-  string newPassword = 3;
-}
+  message UpdatePasswordRequest {
+    int64 userId = 1;
+    string oldPassword = 2;
+    string newPassword = 3;
+  }
 
-message UpdatePasswordResponse {
-}
+  message UpdatePasswordResponse {
+  }
 
-message GenerateTokenReq {
-  int64 userId = 1;
-}
-message GenerateTokenResp {
-  string accessToken = 1;
-  int64 accessExpire = 2;
-  string refreshToken = 3;
-}
+  message GenerateTokenReq {
+    int64 userId = 1;
+  }
+  message GenerateTokenResp {
+    string accessToken = 1;
+    int64 accessExpire = 2;
+    string refreshToken = 3;
+  }
+
+  message RegisterByEmailRequest {
+    string email = 1;
+    string code = 2;
+    string name = 3;
+    string password = 4;
+    string password_confirm = 5;
+  }
+  
+  message RegisterByEmailResponse {
+    string accessToken = 1;
+    string refreshToken = 2;
+    int64 expiresIn = 3;
+  }
+
+  message GetEmailCodeRequest {
+    string email = 1;
+    string captchaId = 2;
+    string captchaCode = 3;
+  }
+  
+  message GetEmailCodeResponse {
+  }

@@ -17,3 +17,4 @@ app/comment/api/etc/comment.yaml
 app/vote/rpc/etc/votecenter.yaml
 app/vote/api/etc/vote.yaml
 .VSCodeCounter
+*.png

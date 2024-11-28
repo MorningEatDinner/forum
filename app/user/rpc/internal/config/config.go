@@ -1,6 +1,7 @@
 package config
 
 import (
+	"forum/common/mail"
 	"forum/common/sms"
 
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -16,6 +17,7 @@ type Config struct {
 		AccessSecret string
 		AccessExpire int64
 	}
-	Cache cache.CacheConf
-	Sms   sms.SMSConfig
+	Cache    cache.CacheConf
+	Sms      sms.SMSConfig
+	MailConf *mail.Config
 }

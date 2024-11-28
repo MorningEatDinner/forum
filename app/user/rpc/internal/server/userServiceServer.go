@@ -37,10 +37,22 @@ func (s *UserServiceServer) GetMobileCode(ctx context.Context, in *pb.GetMobileC
 	return l.GetMobileCode(in)
 }
 
+func (s *UserServiceServer) GetEmailCode(ctx context.Context, in *pb.GetEmailCodeRequest) (*pb.GetEmailCodeResponse, error) {
+	l := logic.NewGetEmailCodeLogic(ctx, s.svcCtx)
+	return l.GetEmailCode(in)
+}
+
+
 func (s *UserServiceServer) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	l := logic.NewRegisterLogic(ctx, s.svcCtx)
 	return l.Register(in)
 }
+
+func (s *UserServiceServer) RegisterByEmail(ctx context.Context, in *pb.RegisterByEmailRequest) (*pb.RegisterByEmailResponse, error) {
+	l := logic.NewRegisterByEmailLogic(ctx, s.svcCtx)
+	return l.RegisterByEmail(in)
+}
+
 
 func (s *UserServiceServer) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
 	l := logic.NewLoginLogic(ctx, s.svcCtx)

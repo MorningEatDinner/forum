@@ -17,6 +17,15 @@ type CheckMobileResp struct {
 	Exist bool `json:"exist"`
 }
 
+type GetEmailCodeReq struct {
+	Email       string `json:"email"`
+	CaptchaId   string `json:"captchaId"`
+	CaptchaCode string `json:"captchaCode"`
+}
+
+type GetEmailCodeResp struct {
+}
+
 type GetMobileCodeReq struct {
 	Phone       string `json:"phone"`
 	CaptchaId   string `json:"captchaId"`
@@ -44,6 +53,20 @@ type RefreshTokenReq struct {
 }
 
 type RefreshTokenResp struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+	ExpiresIn    int64  `json:"expiresIn"`
+}
+
+type RegisterByEmailReq struct {
+	Email           string `json:"email"`
+	Code            string `json:"code"`
+	Name            string `json:"name"`
+	Password        string `json:"password"`
+	PasswordConfirm string `json:"password_confirm"`
+}
+
+type RegisterByEmailResp struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
 	ExpiresIn    int64  `json:"expiresIn"`

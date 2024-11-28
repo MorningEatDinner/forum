@@ -13,31 +13,35 @@ import (
 )
 
 type (
-	CaptchaRequest         = pb.CaptchaRequest
-	CaptchaResponse        = pb.CaptchaResponse
-	CheckMobileRequest     = pb.CheckMobileRequest
-	CheckMobileResponse    = pb.CheckMobileResponse
-	GenerateTokenReq       = pb.GenerateTokenReq
-	GenerateTokenResp      = pb.GenerateTokenResp
-	GetMobileCodeRequest   = pb.GetMobileCodeRequest
-	GetMobileCodeResponse  = pb.GetMobileCodeResponse
-	LoginRequest           = pb.LoginRequest
-	LoginResponse          = pb.LoginResponse
-	RefreshTokenRequest    = pb.RefreshTokenRequest
-	RefreshTokenResponse   = pb.RefreshTokenResponse
-	RegisterRequest        = pb.RegisterRequest
-	RegisterResponse       = pb.RegisterResponse
-	UpdateEmailRequest     = pb.UpdateEmailRequest
-	UpdateEmailResponse    = pb.UpdateEmailResponse
-	UpdateMobileRequest    = pb.UpdateMobileRequest
-	UpdateMobileResponse   = pb.UpdateMobileResponse
-	UpdatePasswordRequest  = pb.UpdatePasswordRequest
-	UpdatePasswordResponse = pb.UpdatePasswordResponse
-	UpdateUserInfoRequest  = pb.UpdateUserInfoRequest
-	UpdateUserInfoResponse = pb.UpdateUserInfoResponse
-	User                   = pb.User
-	UserInfoRequest        = pb.UserInfoRequest
-	UserInfoResponse       = pb.UserInfoResponse
+	CaptchaRequest          = pb.CaptchaRequest
+	CaptchaResponse         = pb.CaptchaResponse
+	CheckMobileRequest      = pb.CheckMobileRequest
+	CheckMobileResponse     = pb.CheckMobileResponse
+	GenerateTokenReq        = pb.GenerateTokenReq
+	GenerateTokenResp       = pb.GenerateTokenResp
+	GetEmailCodeRequest     = pb.GetEmailCodeRequest
+	GetEmailCodeResponse    = pb.GetEmailCodeResponse
+	GetMobileCodeRequest    = pb.GetMobileCodeRequest
+	GetMobileCodeResponse   = pb.GetMobileCodeResponse
+	LoginRequest            = pb.LoginRequest
+	LoginResponse           = pb.LoginResponse
+	RefreshTokenRequest     = pb.RefreshTokenRequest
+	RefreshTokenResponse    = pb.RefreshTokenResponse
+	RegisterByEmailRequest  = pb.RegisterByEmailRequest
+	RegisterByEmailResponse = pb.RegisterByEmailResponse
+	RegisterRequest         = pb.RegisterRequest
+	RegisterResponse        = pb.RegisterResponse
+	UpdateEmailRequest      = pb.UpdateEmailRequest
+	UpdateEmailResponse     = pb.UpdateEmailResponse
+	UpdateMobileRequest     = pb.UpdateMobileRequest
+	UpdateMobileResponse    = pb.UpdateMobileResponse
+	UpdatePasswordRequest   = pb.UpdatePasswordRequest
+	UpdatePasswordResponse  = pb.UpdatePasswordResponse
+	UpdateUserInfoRequest   = pb.UpdateUserInfoRequest
+	UpdateUserInfoResponse  = pb.UpdateUserInfoResponse
+	User                    = pb.User
+	UserInfoRequest         = pb.UserInfoRequest
+	UserInfoResponse        = pb.UserInfoResponse
 
 	UserService interface {
 		CheckMobile(ctx context.Context, in *CheckMobileRequest, opts ...grpc.CallOption) (*CheckMobileResponse, error)
@@ -52,6 +56,8 @@ type (
 		UpdateMobile(ctx context.Context, in *UpdateMobileRequest, opts ...grpc.CallOption) (*UpdateMobileResponse, error)
 		UpdateEmail(ctx context.Context, in *UpdateEmailRequest, opts ...grpc.CallOption) (*UpdateEmailResponse, error)
 		UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error)
+		RegisterByEmail(ctx context.Context, in *RegisterByEmailRequest, opts ...grpc.CallOption) (*RegisterByEmailResponse, error)
+		GetEmailCode(ctx context.Context, in *GetEmailCodeRequest, opts ...grpc.CallOption) (*GetEmailCodeResponse, error)
 	}
 
 	defaultUserService struct {
@@ -123,4 +129,14 @@ func (m *defaultUserService) UpdateEmail(ctx context.Context, in *UpdateEmailReq
 func (m *defaultUserService) UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error) {
 	client := pb.NewUserServiceClient(m.cli.Conn())
 	return client.UpdatePassword(ctx, in, opts...)
+}
+
+func (m *defaultUserService) RegisterByEmail(ctx context.Context, in *RegisterByEmailRequest, opts ...grpc.CallOption) (*RegisterByEmailResponse, error) {
+	client := pb.NewUserServiceClient(m.cli.Conn())
+	return client.RegisterByEmail(ctx, in, opts...)
+}
+
+func (m *defaultUserService) GetEmailCode(ctx context.Context, in *GetEmailCodeRequest, opts ...grpc.CallOption) (*GetEmailCodeResponse, error) {
+	client := pb.NewUserServiceClient(m.cli.Conn())
+	return client.GetEmailCode(ctx, in, opts...)
 }

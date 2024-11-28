@@ -139,3 +139,30 @@ type (
     UpdatePasswordResp {
     }
 )
+
+// 邮箱注册
+type (
+    RegisterByEmailReq {
+        Email string `json:"email"`
+        Code string `json:"code"`
+        Name string `json:"name"`
+        Password string `json:"password"`
+        PasswordConfirm string `json:"password_confirm"`
+    }
+    RegisterByEmailResp {
+        AccessToken string `json:"accessToken"`
+        RefreshToken string `json:"refreshToken"`
+        ExpiresIn int64 `json:"expiresIn"`
+    }
+)
+
+// 获取邮件验证码
+type (
+    GetEmailCodeReq {
+        Email string `json:"email"`
+        CaptchaId string `json:"captchaId"`
+        CaptchaCode string `json:"captchaCode"`
+    }
+    GetEmailCodeResp {
+    }
+)

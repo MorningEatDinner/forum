@@ -37,6 +37,14 @@ service usercenter {
 	@doc "login"
 	@handler login
 	post /login (LoginReq) returns (LoginResp)
+
+	@doc "register by email"
+	@handler registerByEmail
+	post /register-by-email (RegisterByEmailReq) returns (RegisterByEmailResp)
+
+	@doc "get email verification code"
+	@handler getEmailCode
+	post /email-code (GetEmailCodeReq) returns (GetEmailCodeResp)
 }
 
 //authenticated endpoints

@@ -11,5 +11,13 @@ USE mysql;
 UPDATE user SET host='%' WHERE user='root';
 FLUSH PRIVILEGES;
 ```
-# End of Selection
+
+邮件测试
+```bash
+GO111MODULE=on  go install github.com/mailhog/MailHog@latest
 ```
+启动MailHog
+```bash
+MailHog -smtp-bind-addr 0.0.0.0:1030 -api-bind-addr 127.0.0.1:18026 -ui-bind-addr 127.0.0.1:18026 
+```
+访问 ` 127.0.0.1:18026 ` 可以看到邮箱界面![alt text](image.png) 

@@ -19,18 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_CheckMobile_FullMethodName    = "/pb.UserService/CheckMobile"
-	UserService_GetCaptcha_FullMethodName     = "/pb.UserService/GetCaptcha"
-	UserService_GetMobileCode_FullMethodName  = "/pb.UserService/GetMobileCode"
-	UserService_Register_FullMethodName       = "/pb.UserService/Register"
-	UserService_Login_FullMethodName          = "/pb.UserService/Login"
-	UserService_GenerateToken_FullMethodName  = "/pb.UserService/GenerateToken"
-	UserService_RefreshToken_FullMethodName   = "/pb.UserService/RefreshToken"
-	UserService_GetUserDetail_FullMethodName  = "/pb.UserService/GetUserDetail"
-	UserService_UpdateUserInfo_FullMethodName = "/pb.UserService/UpdateUserInfo"
-	UserService_UpdateMobile_FullMethodName   = "/pb.UserService/UpdateMobile"
-	UserService_UpdateEmail_FullMethodName    = "/pb.UserService/UpdateEmail"
-	UserService_UpdatePassword_FullMethodName = "/pb.UserService/UpdatePassword"
+	UserService_CheckMobile_FullMethodName     = "/pb.UserService/CheckMobile"
+	UserService_GetCaptcha_FullMethodName      = "/pb.UserService/GetCaptcha"
+	UserService_GetMobileCode_FullMethodName   = "/pb.UserService/GetMobileCode"
+	UserService_Register_FullMethodName        = "/pb.UserService/Register"
+	UserService_Login_FullMethodName           = "/pb.UserService/Login"
+	UserService_GenerateToken_FullMethodName   = "/pb.UserService/GenerateToken"
+	UserService_RefreshToken_FullMethodName    = "/pb.UserService/RefreshToken"
+	UserService_GetUserDetail_FullMethodName   = "/pb.UserService/GetUserDetail"
+	UserService_UpdateUserInfo_FullMethodName  = "/pb.UserService/UpdateUserInfo"
+	UserService_UpdateMobile_FullMethodName    = "/pb.UserService/UpdateMobile"
+	UserService_UpdateEmail_FullMethodName     = "/pb.UserService/UpdateEmail"
+	UserService_UpdatePassword_FullMethodName  = "/pb.UserService/UpdatePassword"
+	UserService_RegisterByEmail_FullMethodName = "/pb.UserService/RegisterByEmail"
+	UserService_GetEmailCode_FullMethodName    = "/pb.UserService/GetEmailCode"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -49,6 +51,8 @@ type UserServiceClient interface {
 	UpdateMobile(ctx context.Context, in *UpdateMobileRequest, opts ...grpc.CallOption) (*UpdateMobileResponse, error)
 	UpdateEmail(ctx context.Context, in *UpdateEmailRequest, opts ...grpc.CallOption) (*UpdateEmailResponse, error)
 	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error)
+	RegisterByEmail(ctx context.Context, in *RegisterByEmailRequest, opts ...grpc.CallOption) (*RegisterByEmailResponse, error)
+	GetEmailCode(ctx context.Context, in *GetEmailCodeRequest, opts ...grpc.CallOption) (*GetEmailCodeResponse, error)
 }
 
 type userServiceClient struct {
@@ -179,6 +183,26 @@ func (c *userServiceClient) UpdatePassword(ctx context.Context, in *UpdatePasswo
 	return out, nil
 }
 
+func (c *userServiceClient) RegisterByEmail(ctx context.Context, in *RegisterByEmailRequest, opts ...grpc.CallOption) (*RegisterByEmailResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterByEmailResponse)
+	err := c.cc.Invoke(ctx, UserService_RegisterByEmail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetEmailCode(ctx context.Context, in *GetEmailCodeRequest, opts ...grpc.CallOption) (*GetEmailCodeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetEmailCodeResponse)
+	err := c.cc.Invoke(ctx, UserService_GetEmailCode_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -195,6 +219,8 @@ type UserServiceServer interface {
 	UpdateMobile(context.Context, *UpdateMobileRequest) (*UpdateMobileResponse, error)
 	UpdateEmail(context.Context, *UpdateEmailRequest) (*UpdateEmailResponse, error)
 	UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordResponse, error)
+	RegisterByEmail(context.Context, *RegisterByEmailRequest) (*RegisterByEmailResponse, error)
+	GetEmailCode(context.Context, *GetEmailCodeRequest) (*GetEmailCodeResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -240,6 +266,12 @@ func (UnimplementedUserServiceServer) UpdateEmail(context.Context, *UpdateEmailR
 }
 func (UnimplementedUserServiceServer) UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
+}
+func (UnimplementedUserServiceServer) RegisterByEmail(context.Context, *RegisterByEmailRequest) (*RegisterByEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterByEmail not implemented")
+}
+func (UnimplementedUserServiceServer) GetEmailCode(context.Context, *GetEmailCodeRequest) (*GetEmailCodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEmailCode not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -478,6 +510,42 @@ func _UserService_UpdatePassword_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_RegisterByEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterByEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RegisterByEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_RegisterByEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RegisterByEmail(ctx, req.(*RegisterByEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetEmailCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEmailCodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetEmailCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetEmailCode_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetEmailCode(ctx, req.(*GetEmailCodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -532,6 +600,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdatePassword",
 			Handler:    _UserService_UpdatePassword_Handler,
+		},
+		{
+			MethodName: "RegisterByEmail",
+			Handler:    _UserService_RegisterByEmail_Handler,
+		},
+		{
+			MethodName: "GetEmailCode",
+			Handler:    _UserService_GetEmailCode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
