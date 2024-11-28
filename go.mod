@@ -12,6 +12,8 @@ require (
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/mojocn/base64Captcha v1.3.6
 	github.com/pkg/errors v0.9.1
+	github.com/silenceper/wechat/v2 v2.1.7
+	github.com/zeromicro/go-queue v1.2.2
 	github.com/zeromicro/go-zero v1.7.3
 	go.uber.org/zap v1.24.0
 	google.golang.org/grpc v1.65.0
@@ -67,6 +69,7 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
+	github.com/rabbitmq/amqp091-go v1.10.0 // indirect
 	github.com/redis/go-redis/v9 v9.7.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect

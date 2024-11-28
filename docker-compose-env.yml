@@ -49,6 +49,22 @@ services:
     networks:
       - forum-net
 
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    container_name: rabbitmq
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq
+    privileged: true
+    restart: always
+    networks:
+      - forum-net
+
+
 networks:
   forum-net:
     driver: bridge

@@ -51,7 +51,7 @@ type Mailer struct {
 var once sync.Once
 var mailer *Mailer
 
-func NewMailer(config *Config) *Mailer {
+func NewMailer(config Config) *Mailer {
 	once.Do(func() {
 		mailer = &Mailer{
 			Driver: &SMTP{

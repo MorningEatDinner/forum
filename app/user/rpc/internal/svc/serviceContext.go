@@ -3,9 +3,9 @@ package svc
 import (
 	"forum/app/user/model"
 	"forum/app/user/rpc/internal/config"
-	"forum/common/mail"
 	"forum/common/sms"
 
+	"github.com/zeromicro/go-queue/rabbitmq"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -13,10 +13,10 @@ import (
 type ServiceContext struct {
 	Config config.Config
 
-	UserModel   model.UsersModel
-	RedisClient *redis.Redis
-	SMSClient   *sms.Aliyun
-	MailClient  *mail.Mailer
+	UserModel      model.UsersModel
+	RedisClient    *redis.Redis
+	RabbitMqClient rabbitmq.Sender
+	SMSClient      *sms.Aliyun
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -26,8 +26,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 			r.Type = c.Redis.Type
 			r.Pass = c.Redis.Pass
 		}),
-		UserModel:  model.NewUsersModel(sqlx.NewMysql(c.DB.DataSource), c.Cache),
-		SMSClient:  sms.NewSmsClient(c.Sms),
-		MailClient: mail.NewMailer(c.MailConf),
+		UserModel:      model.NewUsersModel(sqlx.NewMysql(c.DB.DataSource), c.Cache),
+		RabbitMqClient: rabbitmq.MustNewSender(c.RabbitSenderConf),
+		SMSClient:      sms.NewSmsClient(c.Sms),
 	}
 }

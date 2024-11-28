@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 	"forum/common/captcha"
 	"forum/common/globalkey"
 	"forum/common/helpers"
+	"forum/common/mq"
 	"forum/common/xerr"
 
 	"github.com/pkg/errors"
@@ -51,12 +53,26 @@ func (l *GetMobileCodeLogic) GetMobileCode(in *pb.GetMobileCodeRequest) (*pb.Get
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "failed to save code to database, key is %s", key)
 	}
 	// 4. 发送短信给用户
-	// TODO: 这里可以修改成为使用消息队列的形式
-	res = l.svcCtx.SMSClient.Send(l.ctx, in.Phone, code)
-	if !res {
+	// 发送消息给RabbitMQ
+	if err := l.SendCode2Phone(in.Phone, code); err != nil {
+		logx.WithContext(l.ctx).Errorf("send code error, key is %s", key)
 		return nil, errors.Wrapf(xerr.NewErrMsg("send code error"), "send code error, key is %s", key)
 	}
 
 	// 5. 返回响应
 	return &pb.GetMobileCodeResponse{}, nil
+}
+
+func (l *GetMobileCodeLogic) SendCode2Phone(phone, code string) error {
+	message := mq.SendPhoneCodeMessage{
+		Phone: phone,
+		Code:  code,
+	}
+	body, err := json.Marshal(message)
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("marshal message failed, err: %v", err.Error())
+		return errors.Wrapf(xerr.NewErrMsg("marshal message failed"), "marshal message failed, err: %v", err.Error())
+	}
+
+	return l.svcCtx.RabbitMqClient.Send("verify_code", "send_code2phone", body)
 }
