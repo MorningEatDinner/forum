@@ -48,8 +48,8 @@ func (l *NotifyUserUpdateHandler) ProcessTask(ctx context.Context, t *asynq.Task
 			l.svcCtx.Config.MailConf.FromConfig.Address,
 			l.svcCtx.Config.MailConf.FromConfig.Name,
 		},
-		To:      []string{p.Email}, // 收件人地址
-		Subject: "Forum 论坛验证码",     // 主题
+		To:      []string{p.Email},              // 收件人地址
+		Subject: "Forum 论坛邀请您更新个人信息", // 主题
 		HTML:    []byte(fmt.Sprintf(mail.TemplateHTMLProfileUpdate, p.UserName)),
 	}
 	res := l.svcCtx.MailClient.Send(ctx, email)

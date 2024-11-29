@@ -114,7 +114,7 @@ func (l *RegisterByEmailLogic) RegisterByEmail(in *pb.RegisterByEmailRequest) (*
 	}
 
 	// 投递消息
-	_, err = l.svcCtx.AsynqClient.Enqueue(asynq.NewTask(jobtype.DeferEmailNotifyJob, payload), asynq.ProcessIn(time.Second*NotifyUserUpdateTimeHours))
+	_, err = l.svcCtx.AsynqClient.Enqueue(asynq.NewTask(jobtype.DeferEmailNotifyJob, payload), asynq.ProcessIn(time.Hour*NotifyUserUpdateTimeHours))
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("failed to enqueue task for userId: %d, err: %v", id, err)
 		return nil, errors.Wrapf(xerr.NewErrMsg("failed to enqueue task for userId"), "failed to enqueue task for userId: %d", id)

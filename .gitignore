@@ -19,3 +19,4 @@ app/vote/api/etc/vote.yaml
 .VSCodeCounter
 app/user/mq/etc/user.yaml
 app/mqueue/cmd/job/etc/mqueue.yaml
+.idea

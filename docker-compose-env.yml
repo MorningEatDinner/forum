@@ -63,7 +63,20 @@ services:
     restart: always
     networks:
       - forum-net
-
+  #asynqmon asynq延迟队列、定时队列的webui - Asynqmon asynq delay queue, timing queue's webUI
+  asynqmon:
+    image: hibiken/asynqmon:latest
+    container_name: asynqmon
+    ports:
+      - 18080:8080
+    command:
+      - '--redis-addr=redis:6379'
+      - '--redis-password=G62m50oigInC30sf'
+    restart: always
+    networks:
+      - forum-net
+    depends_on:
+      - redis
 
 networks:
   forum-net:
