@@ -63,7 +63,7 @@ type GetPostListReq struct {
 
 type GetPostListResp struct {
 	Total int64        `json:"total"` // 总帖子数
-	Posts []PostDetail `json:"posts"` // 帖子列表
+	Posts []Post `json:"posts"` // 帖子列表
 }
 
 type Post struct {

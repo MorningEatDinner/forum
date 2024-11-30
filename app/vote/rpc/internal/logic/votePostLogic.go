@@ -2,20 +2,25 @@ package logic
 
 import (
 	"context"
-	"time"
-
-	"forum/app/vote/model"
+	"fmt"
 	"forum/app/vote/rpc/internal/svc"
 	"forum/app/vote/rpc/pb"
-
+	"forum/common/globalkey"
+	"forum/common/xerr"
+	"forum/tmp/app/post/rpc/postservice"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/stores/redis"
+	"strconv"
 )
 
 const (
-	VoteTypeOppose = -1 // 反对
-	VoteTypeCancel = 0  // 取消
-	VoteTypeAgree  = 1  // 赞成
+	VoteTypeOppose    = -1               // 反对
+	VoteTypeCancel    = 0                // 取消
+	VoteTypeAgree     = 1                // 赞成
+	VoteKeyExpiration = 7 * 24 * 60 * 60 // 设置7天的过期时间
+	ScoreIncrHot      = 1
+	ScoreDescHot      = -1
 )
 
 type VotePostLogic struct {
@@ -33,128 +38,90 @@ func NewVotePostLogic(ctx context.Context, svcCtx *svc.ServiceContext) *VotePost
 }
 
 func (l *VotePostLogic) VotePost(in *pb.VotePostRequest) (*pb.VotePostResponse, error) {
-	// 1. 查询是否已投票
-	voteInfo, err := l.svcCtx.VoteRecordModel.FindOneByPostIdUserId(l.ctx, uint64(in.PostId), uint64(in.UserId))
-	if err != nil && err != model.ErrNotFound {
-		return nil, errors.Wrapf(err, "get user vote failed, userId: %d, postId: %d", in.UserId, in.PostId)
+	// 1. 查询是否已投票-- Redis中查询是否已经存在投票记录了
+	key := globalkey.GetRedisKey(fmt.Sprintf(globalkey.VoteRecordKey, in.PostId))
+	votedType, err := l.svcCtx.RedisClient.Zscore(key, strconv.FormatInt(in.UserId, 10))
+	if err == redis.Nil {
+		// 3. 新增投票
+		if in.VoteType != VoteTypeCancel {
+			// 新增投票， 直接在Redis中记录
+			_, err = l.svcCtx.RedisClient.Zadd(key, int64(in.VoteType), strconv.FormatInt(in.UserId, 10))
+			if err != nil {
+				return nil, errors.Wrapf(err, "zadd vote record failed, postId: %d, userId: %d", in.PostId, in.UserId)
+			}
+			// 续期
+			if err = l.renewVoteKeyExpiration(key); err != nil {
+				return nil, errors.Wrapf(err, "renew vote key expiration failed, key: %s", key)
+			}
+
+			// 无论是赞成还是反对， 都是增加热点分
+			// TODO: 调用rpc方法修改post 服务中的分数
+			_, err = l.svcCtx.PostRpc.UpdatePostScore(l.ctx, &postservice.UpdatePostScoreRequest{
+				PostId: in.PostId,
+				Score:  ScoreIncrHot,
+				Up:     in.VoteType == VoteTypeAgree,
+				Down:   in.VoteType == VoteTypeOppose,
+			})
+			if err != nil {
+				return nil, errors.Wrapf(err, "update post score failed, postId: %d, userId: %d", in.PostId, in.UserId)
+			}
+		}
+		return &pb.VotePostResponse{
+			Success: true,
+		}, nil
+	}
+	// 真的错误了
+	if err != nil {
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "zscore vote record failed, postId: %d, userId: %d", in.PostId, in.UserId)
 	}
 
 	// 2. 已投票且方向相同则返回
-	if voteInfo != nil && voteInfo.VoteType == int64(in.VoteType) {
+	if votedType != 0 && votedType == int64(in.VoteType) {
 		return nil, errors.New("already voted with same direction")
 	}
 
 	// 2. 处理已投票的情况
-	if voteInfo != nil {
-		voteCountInfo, err := l.svcCtx.VoteCountModel.FindOneByPostId(l.ctx, uint64(in.PostId))
-		if err != nil {
-			return nil, errors.Wrapf(err, "get vote count failed, postId: %d", in.PostId)
-		}
-		voteCountId := voteCountInfo.VoteCountId
-		// 取消投票
+	if votedType != 0 {
+		// 如果取消投票， 就是现在投票操作为0， 那么就删除， 并且减少post服务中的分数
 		if in.VoteType == VoteTypeCancel {
-			err := l.svcCtx.VoteRecordModel.Delete(l.ctx, voteInfo.VoteId)
+			// 那么删除投票数据
+			_, err = l.svcCtx.RedisClient.Zrem(key, strconv.FormatInt(in.UserId, 10))
 			if err != nil {
-				return nil, errors.Wrapf(err, "delete vote failed, voteId: %d", voteInfo.VoteId)
+				return nil, errors.Wrapf(err, "zrem vote record failed, postId: %d, userId: %d", in.PostId, in.UserId)
 			}
-			if voteInfo.VoteType == VoteTypeAgree {
-				// 如果是赞成票
-				err = l.svcCtx.VoteCountModel.DecrementAgreeCount(l.ctx, voteCountId)
-				if err != nil {
-					return nil, errors.Wrapf(err, "decrement agree count failed, voteId: %d", voteCountId)
-				}
-				// TODO: 需要修改帖子的分数
-			} else {
-				// 如果是反对票
-				err = l.svcCtx.VoteCountModel.DecrementOpposeCount(l.ctx, voteCountId)
-				if err != nil {
-					return nil, errors.Wrapf(err, "decrement oppose count failed, voteId: %d", voteCountId)
-				}
-				// TODO: 需要修改帖子的分数
+			// TODO: 调用rpc方法减少post 服务中的分数， 这里可以改用消息队列来实现
+			// 因为是撤销， 所以要减少分数
+			_, err = l.svcCtx.PostRpc.UpdatePostScore(l.ctx, &postservice.UpdatePostScoreRequest{
+				PostId: in.PostId,
+				Score:  ScoreDescHot,
+				Up:     votedType == VoteTypeAgree,
+				Down:   votedType == VoteTypeOppose,
+			})
+			if err != nil {
+				return nil, errors.Wrapf(err, "update post score failed, postId: %d, userId: %d", in.PostId, in.UserId)
 			}
-			return &pb.VotePostResponse{Success: true}, nil
 		}
 
-		voteInfo.VoteType = int64(in.VoteType)
-		err = l.svcCtx.VoteRecordModel.Update(l.ctx, voteInfo)
+		// 现在是要修改投票的方向
+		changeScore := int64(in.VoteType) - int64(votedType)
+		_, err = l.svcCtx.RedisClient.Zincrby(key, changeScore, strconv.FormatInt(in.UserId, 10))
 		if err != nil {
-			return nil, errors.Wrapf(err, "update vote failed, voteId: %d", voteInfo.VoteId)
+			return nil, errors.Wrapf(err, "zincrby vote record failed, postId: %d, userId: %d", in.PostId, in.UserId)
 		}
-		if in.VoteType == VoteTypeAgree {
-			// 那么原来是反对票，现在改为赞成票
-			err = l.svcCtx.VoteCountModel.DecrementOpposeCount(l.ctx, voteCountId)
-			if err != nil {
-				return nil, errors.Wrapf(err, "decrement oppose count failed, voteId: %d", voteCountId)
-			}
-			err = l.svcCtx.VoteCountModel.IncrementAgreeCount(l.ctx, voteCountId)
-			if err != nil {
-				return nil, errors.Wrapf(err, "increment agree count failed, voteId: %d", voteCountId)
-			}
-		} else {
-			// 那么原来是赞成票，现在改为反对票
-			err = l.svcCtx.VoteCountModel.DecrementAgreeCount(l.ctx, voteCountId)
-			if err != nil {
-				return nil, errors.Wrapf(err, "decrement agree count failed, voteId: %d", voteCountId)
-			}
-			err = l.svcCtx.VoteCountModel.IncrementOpposeCount(l.ctx, voteCountId)
-			if err != nil {
-				return nil, errors.Wrapf(err, "increment oppose count failed, voteId: %d", voteCountId)
-			}
-		}
-		// TODO: 调用rpc请求， 修改帖子的分数
 
+		// 续期
+		if err = l.renewVoteKeyExpiration(key); err != nil {
+			return nil, errors.Wrapf(err, "renew vote key expiration failed, key: %s", key)
+		}
+
+		// 转换投票方向不会对热度造成影响， 所以不需要调用rpc方法
 		return &pb.VotePostResponse{Success: true}, nil
 	}
 
-	// 3. 新增投票
-	if in.VoteType != VoteTypeCancel {
-		vote := &model.VoteRecord{
-			PostId:      uint64(in.PostId),
-			UserId:      uint64(in.UserId),
-			VoteType:    int64(in.VoteType),
-			CreateTime:  time.Now(),
-			UpdatedTime: time.Now(),
-		}
-		_, err := l.svcCtx.VoteRecordModel.Insert(l.ctx, vote)
-		if err != nil {
-			return nil, errors.Wrapf(err, "insert vote failed, postId: %d, userId: %d", in.PostId, in.UserId)
-		}
+	return nil, errors.Wrapf(xerr.NewErrMsg("server error"), "vote post failed, postId: %d, userId: %d", in.PostId, in.UserId)
+}
 
-		voteCountInfo, err := l.svcCtx.VoteCountModel.FindOneByPostId(l.ctx, uint64(in.PostId))
-		if err == model.ErrNotFound {
-			// 不存在则创建
-			voteCount := &model.VoteCount{
-				PostId:      uint64(in.PostId),
-				AgreeCount:  0,
-				OpposeCount: 0,
-				CreateTime:  time.Now(),
-				UpdatedTime: time.Now(),
-			}
-			res, err := l.svcCtx.VoteCountModel.Insert(l.ctx, voteCount)
-			if err != nil {
-				return nil, errors.Wrapf(err, "insert vote count failed, postId: %d", in.PostId)
-			}
-			voteCountInfo = voteCount
-			voteCountInfo.VoteCountId, _ = res.LastInsertId()
-		} else if err != nil {
-			return nil, errors.Wrapf(err, "get vote count failed, postId: %d", in.PostId)
-		}
-
-		if in.VoteType == VoteTypeAgree {
-			err = l.svcCtx.VoteCountModel.IncrementAgreeCount(l.ctx, voteCountInfo.VoteCountId)
-			if err != nil {
-				return nil, errors.Wrapf(err, "increment agree count failed, voteId: %d", voteCountInfo.VoteCountId)
-			}
-		} else {
-			err = l.svcCtx.VoteCountModel.IncrementOpposeCount(l.ctx, voteCountInfo.VoteCountId)
-			if err != nil {
-				return nil, errors.Wrapf(err, "increment oppose count failed, voteId: %d", voteCountInfo.VoteCountId)
-			}
-		}
-		// TODO: 调用rpc方法修改帖子分数
-	}
-
-	return &pb.VotePostResponse{
-		Success: true,
-	}, nil
+// 添加续期方法
+func (l *VotePostLogic) renewVoteKeyExpiration(key string) error {
+	return l.svcCtx.RedisClient.Expire(key, VoteKeyExpiration)
 }

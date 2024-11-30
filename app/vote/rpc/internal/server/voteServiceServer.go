@@ -27,20 +27,6 @@ func (s *VoteServiceServer) VotePost(ctx context.Context, in *pb.VotePostRequest
 	return l.VotePost(in)
 }
 
-func (s *VoteServiceServer) UpdateUserVote(ctx context.Context, in *pb.UpdateUserVoteRequest) (*pb.UpdateUserVoteResponse, error) {
-	l := logic.NewUpdateUserVoteLogic(ctx, s.svcCtx)
-	return l.UpdateUserVote(in)
-}
-
-func (s *VoteServiceServer) RemoveUserVote(ctx context.Context, in *pb.RemoveUserVoteRequest) (*pb.RemoveUserVoteResponse, error) {
-	l := logic.NewRemoveUserVoteLogic(ctx, s.svcCtx)
-	return l.RemoveUserVote(in)
-}
-
-func (s *VoteServiceServer) GetVoteCount(ctx context.Context, in *pb.GetVoteCountRequest) (*pb.GetVoteCountResponse, error) {
-	l := logic.NewGetVoteCountLogic(ctx, s.svcCtx)
-	return l.GetVoteCount(in)
-}
 
 func (s *VoteServiceServer) GetUserVote(ctx context.Context, in *pb.GetUserVoteRequest) (*pb.GetUserVoteResponse, error) {
 	l := logic.NewGetUserVoteLogic(ctx, s.svcCtx)

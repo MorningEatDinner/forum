@@ -2,6 +2,9 @@ package logic
 
 import (
 	"context"
+	"fmt"
+	"forum/common/globalkey"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"time"
 
 	"forum/app/post/model"
@@ -33,7 +36,6 @@ func (l *CreatePostLogic) CreatePost(in *pb.CreatePostRequest) (*pb.CreatePostRe
 		Content:     in.Content,
 		CreateTime:  time.Now(),
 		UpdatedTime: time.Now(),
-		Score:       time.Now().Unix(),
 	}
 	insertRes, err := l.svcCtx.PostModel.Insert(l.ctx, post)
 	if err != nil {
@@ -41,7 +43,32 @@ func (l *CreatePostLogic) CreatePost(in *pb.CreatePostRequest) (*pb.CreatePostRe
 		return nil, err
 	}
 	id, _ := insertRes.LastInsertId()
+	// 插入记录的同时， 在Redis中插入分数记录， 投票记录以及社区记录
+	pipe, err := l.svcCtx.RedisClient.TxPipeline()
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("create post failed, err: %v", err)
+		return nil, err
+	}
 
+	pipe.ZAdd(l.ctx, globalkey.GetRedisKey(globalkey.PostScoreKey), redis.Z{
+		Member: id,
+		Score:  float64(time.Now().Unix()),
+	})
+	pipe.ZAdd(l.ctx, globalkey.GetRedisKey(globalkey.PostUpCountKey), redis.Z{
+		Member: id,
+		Score:  0,
+	})
+	pipe.ZAdd(l.ctx, globalkey.GetRedisKey(globalkey.PostDownCountKey), redis.Z{
+		Member: id,
+		Score:  0,
+	})
+	pipe.SAdd(l.ctx, fmt.Sprintf(globalkey.GetRedisKey(globalkey.PostCommunityKey), in.CommunityId), id)
+
+	_, err = pipe.Exec(l.ctx)
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("create post failed, err: %v", err)
+		return nil, err
+	}
 	return &pb.CreatePostResponse{
 		PostId: id,
 	}, nil

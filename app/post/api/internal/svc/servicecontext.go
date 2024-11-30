@@ -4,8 +4,8 @@ import (
 	"forum/app/comment/rpc/commentservice"
 	"forum/app/community/rpc/communityservice"
 	"forum/app/post/api/internal/config"
-	"forum/app/post/rpc/postservice"
 	"forum/app/user/rpc/userservice"
+	"forum/tmp/app/post/rpc/postservice"
 
 	"github.com/zeromicro/go-zero/zrpc"
 )

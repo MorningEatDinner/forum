@@ -19,11 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	VoteService_VotePost_FullMethodName       = "/pb.VoteService/VotePost"
-	VoteService_UpdateUserVote_FullMethodName = "/pb.VoteService/UpdateUserVote"
-	VoteService_RemoveUserVote_FullMethodName = "/pb.VoteService/RemoveUserVote"
-	VoteService_GetVoteCount_FullMethodName   = "/pb.VoteService/GetVoteCount"
-	VoteService_GetUserVote_FullMethodName    = "/pb.VoteService/GetUserVote"
+	VoteService_VotePost_FullMethodName    = "/pb.VoteService/VotePost"
+	VoteService_GetUserVote_FullMethodName = "/pb.VoteService/GetUserVote"
 )
 
 // VoteServiceClient is the client API for VoteService service.
@@ -31,9 +28,6 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type VoteServiceClient interface {
 	VotePost(ctx context.Context, in *VotePostRequest, opts ...grpc.CallOption) (*VotePostResponse, error)
-	UpdateUserVote(ctx context.Context, in *UpdateUserVoteRequest, opts ...grpc.CallOption) (*UpdateUserVoteResponse, error)
-	RemoveUserVote(ctx context.Context, in *RemoveUserVoteRequest, opts ...grpc.CallOption) (*RemoveUserVoteResponse, error)
-	GetVoteCount(ctx context.Context, in *GetVoteCountRequest, opts ...grpc.CallOption) (*GetVoteCountResponse, error)
 	GetUserVote(ctx context.Context, in *GetUserVoteRequest, opts ...grpc.CallOption) (*GetUserVoteResponse, error)
 }
 
@@ -55,36 +49,6 @@ func (c *voteServiceClient) VotePost(ctx context.Context, in *VotePostRequest, o
 	return out, nil
 }
 
-func (c *voteServiceClient) UpdateUserVote(ctx context.Context, in *UpdateUserVoteRequest, opts ...grpc.CallOption) (*UpdateUserVoteResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateUserVoteResponse)
-	err := c.cc.Invoke(ctx, VoteService_UpdateUserVote_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *voteServiceClient) RemoveUserVote(ctx context.Context, in *RemoveUserVoteRequest, opts ...grpc.CallOption) (*RemoveUserVoteResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RemoveUserVoteResponse)
-	err := c.cc.Invoke(ctx, VoteService_RemoveUserVote_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *voteServiceClient) GetVoteCount(ctx context.Context, in *GetVoteCountRequest, opts ...grpc.CallOption) (*GetVoteCountResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetVoteCountResponse)
-	err := c.cc.Invoke(ctx, VoteService_GetVoteCount_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *voteServiceClient) GetUserVote(ctx context.Context, in *GetUserVoteRequest, opts ...grpc.CallOption) (*GetUserVoteResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetUserVoteResponse)
@@ -100,9 +64,6 @@ func (c *voteServiceClient) GetUserVote(ctx context.Context, in *GetUserVoteRequ
 // for forward compatibility.
 type VoteServiceServer interface {
 	VotePost(context.Context, *VotePostRequest) (*VotePostResponse, error)
-	UpdateUserVote(context.Context, *UpdateUserVoteRequest) (*UpdateUserVoteResponse, error)
-	RemoveUserVote(context.Context, *RemoveUserVoteRequest) (*RemoveUserVoteResponse, error)
-	GetVoteCount(context.Context, *GetVoteCountRequest) (*GetVoteCountResponse, error)
 	GetUserVote(context.Context, *GetUserVoteRequest) (*GetUserVoteResponse, error)
 	mustEmbedUnimplementedVoteServiceServer()
 }
@@ -116,15 +77,6 @@ type UnimplementedVoteServiceServer struct{}
 
 func (UnimplementedVoteServiceServer) VotePost(context.Context, *VotePostRequest) (*VotePostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VotePost not implemented")
-}
-func (UnimplementedVoteServiceServer) UpdateUserVote(context.Context, *UpdateUserVoteRequest) (*UpdateUserVoteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserVote not implemented")
-}
-func (UnimplementedVoteServiceServer) RemoveUserVote(context.Context, *RemoveUserVoteRequest) (*RemoveUserVoteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveUserVote not implemented")
-}
-func (UnimplementedVoteServiceServer) GetVoteCount(context.Context, *GetVoteCountRequest) (*GetVoteCountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetVoteCount not implemented")
 }
 func (UnimplementedVoteServiceServer) GetUserVote(context.Context, *GetUserVoteRequest) (*GetUserVoteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserVote not implemented")
@@ -168,60 +120,6 @@ func _VoteService_VotePost_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _VoteService_UpdateUserVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateUserVoteRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VoteServiceServer).UpdateUserVote(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: VoteService_UpdateUserVote_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VoteServiceServer).UpdateUserVote(ctx, req.(*UpdateUserVoteRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _VoteService_RemoveUserVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RemoveUserVoteRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VoteServiceServer).RemoveUserVote(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: VoteService_RemoveUserVote_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VoteServiceServer).RemoveUserVote(ctx, req.(*RemoveUserVoteRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _VoteService_GetVoteCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetVoteCountRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VoteServiceServer).GetVoteCount(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: VoteService_GetVoteCount_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VoteServiceServer).GetVoteCount(ctx, req.(*GetVoteCountRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _VoteService_GetUserVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUserVoteRequest)
 	if err := dec(in); err != nil {
@@ -250,18 +148,6 @@ var VoteService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VotePost",
 			Handler:    _VoteService_VotePost_Handler,
-		},
-		{
-			MethodName: "UpdateUserVote",
-			Handler:    _VoteService_UpdateUserVote_Handler,
-		},
-		{
-			MethodName: "RemoveUserVote",
-			Handler:    _VoteService_RemoveUserVote_Handler,
-		},
-		{
-			MethodName: "GetVoteCount",
-			Handler:    _VoteService_GetVoteCount_Handler,
 		},
 		{
 			MethodName: "GetUserVote",

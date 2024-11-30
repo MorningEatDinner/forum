@@ -6,30 +6,7 @@ package pb;
 
 service VoteService {
     rpc VotePost(VotePostRequest) returns (VotePostResponse) {}       // 为帖子投票
-    rpc UpdateUserVote(UpdateUserVoteRequest) returns (UpdateUserVoteResponse) {} // 更新用户投票
-    rpc RemoveUserVote(RemoveUserVoteRequest) returns (RemoveUserVoteResponse) {} // 撤销用户投票
-    rpc GetVoteCount(GetVoteCountRequest) returns (GetVoteCountResponse) {} // 获取帖子投票统计信息
     rpc GetUserVote(GetUserVoteRequest) returns (GetUserVoteResponse) {}     // 获取用户对帖子的投票记录
-}
-
-// 投票记录
-message VoteRecord {
-    int64 voteId = 1;           // 投票记录ID
-    int64 postId = 2;           // 帖子ID
-    int64 userId = 3;           // 用户ID
-    int32 voteType = 4;         // 投票类型 -1: 反对票, 0: 取消投票, 1: 赞成票
-    string createTime = 5;      // 创建时间
-    string updatedTime = 6;     // 更新时间
-}
-
-// 投票计数
-message VoteCount {
-    int64 postId = 1;           // 帖子ID
-    int32 agreeCount = 2;       // 赞成票数
-    int32 opposeCount = 3;      // 反对票数
-    int32 neutralCount = 4;     // 取消票数 (如果需要的话)
-    string createTime = 5;      // 创建时间
-    string updatedTime = 6;     // 更新时间
 }
 
 // 为帖子投票的请求
@@ -44,38 +21,6 @@ message VotePostResponse {
     bool success = 1;           // 投票是否成功
 }
 
-// 更新用户投票的请求
-message UpdateUserVoteRequest {
-    int64 postId = 1;           // 帖子ID
-    int64 userId = 2;           // 用户ID
-    int32 voteType = 3;         // 新的投票类型 -1: 反对票, 0: 取消投票, 1: 赞成票
-}
-
-// 更新用户投票的响应
-message UpdateUserVoteResponse {
-    bool success = 1;           // 更新投票是否成功
-}
-
-// 撤销用户投票的请求
-message RemoveUserVoteRequest {
-    int64 voteId = 1;           // 投票记录ID
-}
-
-// 撤销用户投票的响应
-message RemoveUserVoteResponse {
-    bool success = 1;           // 撤销投票是否成功
-}
-
-// 获取帖子投票统计信息的请求
-message GetVoteCountRequest {
-    int64 postId = 1;           // 帖子ID
-}
-
-// 获取帖子投票统计信息的响应
-message GetVoteCountResponse {
-    VoteCount voteCount = 1;    // 投票统计信息
-}
-
 // 获取用户投票记录的请求
 message GetUserVoteRequest {
     int64 postId = 1;           // 帖子ID
@@ -84,5 +29,5 @@ message GetUserVoteRequest {
 
 // 获取用户投票记录的响应
 message GetUserVoteResponse {
-    VoteRecord voteRecord = 1;  // 用户的投票记录
+    int64 voteRecord = 1;  // 用户的投票记录
 }

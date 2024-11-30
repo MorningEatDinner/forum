@@ -6,7 +6,7 @@ package postservice
 import (
 	"context"
 
-	"forum/app/post/rpc/pb"
+	"forum/tmp/app/post/rpc/pb"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
@@ -24,6 +24,8 @@ type (
 	GetPostListRequest             = pb.GetPostListRequest
 	GetPostListResponse            = pb.GetPostListResponse
 	Post                           = pb.Post
+	UpdatePostScoreRequest         = pb.UpdatePostScoreRequest
+	UpdatePostScoreResponse        = pb.UpdatePostScoreResponse
 
 	PostService interface {
 		CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*CreatePostResponse, error)
@@ -31,6 +33,7 @@ type (
 		GetPostList(ctx context.Context, in *GetPostListRequest, opts ...grpc.CallOption) (*GetPostListResponse, error)
 		GetPostListByCommunity(ctx context.Context, in *GetPostListByCommunityRequest, opts ...grpc.CallOption) (*GetPostListByCommunityResponse, error)
 		DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error)
+		UpdatePostScore(ctx context.Context, in *UpdatePostScoreRequest, opts ...grpc.CallOption) (*UpdatePostScoreResponse, error)
 	}
 
 	defaultPostService struct {
@@ -67,4 +70,9 @@ func (m *defaultPostService) GetPostListByCommunity(ctx context.Context, in *Get
 func (m *defaultPostService) DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error) {
 	client := pb.NewPostServiceClient(m.cli.Conn())
 	return client.DeletePost(ctx, in, opts...)
+}
+
+func (m *defaultPostService) UpdatePostScore(ctx context.Context, in *UpdatePostScoreRequest, opts ...grpc.CallOption) (*UpdatePostScoreResponse, error) {
+	client := pb.NewPostServiceClient(m.cli.Conn())
+	return client.UpdatePostScore(ctx, in, opts...)
 }

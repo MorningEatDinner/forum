@@ -2,13 +2,11 @@ package public
 
 import (
 	"context"
-
 	"forum/app/community/rpc/communityservice"
 	"forum/app/post/api/internal/svc"
 	"forum/app/post/api/internal/types"
 	"forum/app/post/rpc/postservice"
 	"forum/app/user/rpc/userservice"
-
 	"github.com/jinzhu/copier"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -59,6 +57,8 @@ func (l *GetPostListLogic) GetPostList(req *types.GetPostListReq) (resp *types.G
 		CommunityId: communityId,
 		AuthorId:    authorId,
 	})
+	logx.WithContext(l.ctx).Infof("获取到的帖子列表响应: total=%d, posts=%+v", listResp.Total, listResp.Posts)
+
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("get post list failed, err: %v", err)
 		return nil, err

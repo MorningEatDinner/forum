@@ -12,3 +12,8 @@ DB:
 Cache:
   - Host: localhost:26379
     Pass: G62m50oigInC30sf
+    
+PostRpcConf:
+  Endpoints:
+    - 127.0.0.1:3003
+  NonBlock: true

@@ -2,11 +2,11 @@ package public
 
 import (
 	"context"
+	"forum/tmp/app/post/rpc/postservice"
 
 	"forum/app/community/rpc/communityservice"
 	"forum/app/post/api/internal/svc"
 	"forum/app/post/api/internal/types"
-	"forum/app/post/rpc/postservice"
 	"forum/app/user/rpc/userservice"
 
 	"github.com/jinzhu/copier"

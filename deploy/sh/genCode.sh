@@ -23,3 +23,5 @@ goctl model mysql ddl -src ./deploy/sql/community.sql -dir ./tmp/app/community/m
 goctl model mysql ddl -src ./deploy/sql/post.sql -dir ./tmp/app/post/model -c
 goctl model mysql ddl -src ./deploy/sql/comment.sql -dir ./app/comment/model -c
 goctl model mysql ddl -src ./deploy/sql/vote.sql -dir ./app/vote/model -c
+
+goctl model mysql ddl -src ./deploy/sql/post.sql -dir ./tmp/app/post/model -c

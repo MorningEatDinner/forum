@@ -46,3 +46,7 @@ func (s *PostServiceServer) DeletePost(ctx context.Context, in *pb.DeletePostReq
 	l := logic.NewDeletePostLogic(ctx, s.svcCtx)
 	return l.DeletePost(in)
 }
+func (s *PostServiceServer) UpdatePostScore(ctx context.Context, in *pb.UpdatePostScoreRequest) (*pb.UpdatePostScoreResponse, error) {
+	l := logic.NewUpdatePostScoreLogic(ctx, s.svcCtx)
+	return l.UpdatePostScore(in)
+}

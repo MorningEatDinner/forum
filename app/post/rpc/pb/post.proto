@@ -10,6 +10,7 @@ service PostService {
     rpc GetPostList(GetPostListRequest) returns (GetPostListResponse) {}
     rpc GetPostListByCommunity(GetPostListByCommunityRequest) returns (GetPostListByCommunityResponse) {}
     rpc DeletePost(DeletePostRequest) returns (DeletePostResponse) {}
+    rpc UpdatePostScore(UpdatePostScoreRequest) returns (UpdatePostScoreResponse) {} // New method
 }
 
 // 基础帖子信息
@@ -77,4 +78,16 @@ message DeletePostRequest {
 
 message DeletePostResponse {
     bool success = 1;            // 删除是否成功
+}
+
+// New messages for UpdatePostScore
+message UpdatePostScoreRequest {
+    int64 postId = 1;    // 帖子ID
+    int64 score = 2;     // 分数更新值
+    bool up = 3;
+    bool down = 4;
+}
+
+message UpdatePostScoreResponse {
+    bool success = 1;    // 更新是否成功
 }
