@@ -7,6 +7,7 @@ package pb;
 service VoteService {
     rpc VotePost(VotePostRequest) returns (VotePostResponse) {}       // 为帖子投票
     rpc GetUserVote(GetUserVoteRequest) returns (GetUserVoteResponse) {}     // 获取用户对帖子的投票记录
+    rpc GetPostVoteCounts(GetPostVoteCountsRequest) returns (GetPostVoteCountsResponse) {}  // 获取帖子的投票统计
 }
 
 // 为帖子投票的请求
@@ -30,4 +31,15 @@ message GetUserVoteRequest {
 // 获取用户投票记录的响应
 message GetUserVoteResponse {
     int64 voteRecord = 1;  // 用户的投票记录
+}
+
+// 获取帖子投票统计的请求
+message GetPostVoteCountsRequest {
+    int64 postId = 1;           // 帖子ID
+}
+
+// 获取帖子投票统计的响应
+message GetPostVoteCountsResponse {
+    int64 upvotes = 1;          // 赞成票数量
+    int64 downvotes = 2;        // 反对票数量
 }

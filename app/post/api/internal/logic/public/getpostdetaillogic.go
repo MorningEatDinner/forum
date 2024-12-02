@@ -7,7 +7,6 @@ import (
 	"forum/app/community/rpc/communityservice"
 	"forum/app/post/api/internal/svc"
 	"forum/app/post/api/internal/types"
-	"forum/app/user/rpc/userservice"
 
 	"github.com/jinzhu/copier"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -38,15 +37,6 @@ func (l *GetPostDetailLogic) GetPostDetail(req *types.GetPostDetailReq) (resp *t
 		return nil, err
 	}
 
-	// 获取用户名
-	userResp, err := l.svcCtx.UserRpc.GetUserDetail(l.ctx, &userservice.UserInfoRequest{
-		UserId: postResp.Post.AuthorId,
-	})
-	if err != nil {
-		logx.WithContext(l.ctx).Errorf("get user detail failed, err: %v", err)
-		return nil, err
-	}
-
 	// 获取社区的信息
 	communityResp, err := l.svcCtx.CommunityRpc.GetCommunityDetails(l.ctx, &communityservice.GetCommunityDetailsRequest{
 		CommunityId: postResp.Post.CommunityId,
@@ -56,17 +46,23 @@ func (l *GetPostDetailLogic) GetPostDetail(req *types.GetPostDetailReq) (resp *t
 		return nil, err
 	}
 
-	// TODO: 获取当前的帖子的投票的数量
-	postRet := &types.Post{}
 	communityRet := &types.Community{}
-	copier.Copy(postRet, postResp.Post)
 	copier.Copy(communityRet, communityResp.Community)
+	postRet := &types.Post{}
+	copier.Copy(postRet, postResp.Post)
+	AuthorRet := &types.AuthorInfo{}
+	logx.WithContext(l.ctx).Infof("postResp: %v", postResp.UserInfo)
+	copier.Copy(AuthorRet, postResp.UserInfo)
 
 	resp = &types.GetPostDetailResp{
 		PostDetail: types.PostDetail{
 			Post:       *postRet,
 			Community:  *communityRet,
-			AuthorName: userResp.User.Username,
+			AuthorInfo: *AuthorRet,
+			VotedInfo: types.VotedInfo{
+				UpCount:   postResp.UpCount,
+				DownCount: postResp.DownCount,
+			},
 		},
 	}
 

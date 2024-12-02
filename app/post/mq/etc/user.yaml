@@ -1,0 +1,28 @@
+Name: order-mq
+Host: 0.0.0.0
+Port: 5001
+Mode: dev
+Redis:
+  Host: localhost:26379
+  Type: node
+  Pass: G62m50oigInC30sf
+  Key: post-mq
+
+DeleteUpMQConf:
+  Username: guest
+  Password: guest
+  Host: localhost
+  Port: 5672
+  ListenerQueues:
+    -
+      Name: "up" 
+
+
+DeleteDownMQConf:
+  Username: guest
+  Password: guest
+  Host: localhost
+  Port: 5672
+  ListenerQueues:
+    -
+      Name: "down" 

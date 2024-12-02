@@ -17,9 +17,13 @@ type (
 	VotePostRequest     = pb.VotePostRequest
 	VotePostResponse    = pb.VotePostResponse
 
+	GetPostVoteCountsRequest  = pb.GetPostVoteCountsRequest
+	GetPostVoteCountsResponse = pb.GetPostVoteCountsResponse
+
 	VoteService interface {
 		VotePost(ctx context.Context, in *VotePostRequest, opts ...grpc.CallOption) (*VotePostResponse, error)
 		GetUserVote(ctx context.Context, in *GetUserVoteRequest, opts ...grpc.CallOption) (*GetUserVoteResponse, error)
+		GetPostVoteCounts(ctx context.Context, in *GetPostVoteCountsRequest, opts ...grpc.CallOption) (*GetPostVoteCountsResponse, error)
 	}
 
 	defaultVoteService struct {
@@ -41,4 +45,8 @@ func (m *defaultVoteService) VotePost(ctx context.Context, in *VotePostRequest, 
 func (m *defaultVoteService) GetUserVote(ctx context.Context, in *GetUserVoteRequest, opts ...grpc.CallOption) (*GetUserVoteResponse, error) {
 	client := pb.NewVoteServiceClient(m.cli.Conn())
 	return client.GetUserVote(ctx, in, opts...)
+}
+func (m *defaultVoteService) GetPostVoteCounts(ctx context.Context, in *GetPostVoteCountsRequest, opts ...grpc.CallOption) (*GetPostVoteCountsResponse, error) {
+	client := pb.NewVoteServiceClient(m.cli.Conn())
+	return client.GetPostVoteCounts(ctx, in, opts...)
 }

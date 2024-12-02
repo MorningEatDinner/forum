@@ -25,6 +25,7 @@ const (
 	PostService_GetPostListByCommunity_FullMethodName = "/pb.PostService/GetPostListByCommunity"
 	PostService_DeletePost_FullMethodName             = "/pb.PostService/DeletePost"
 	PostService_UpdatePostScore_FullMethodName        = "/pb.PostService/UpdatePostScore"
+	PostService_DeletePostScheduler_FullMethodName    = "/pb.PostService/DeletePostScheduler"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -37,6 +38,7 @@ type PostServiceClient interface {
 	GetPostListByCommunity(ctx context.Context, in *GetPostListByCommunityRequest, opts ...grpc.CallOption) (*GetPostListByCommunityResponse, error)
 	DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error)
 	UpdatePostScore(ctx context.Context, in *UpdatePostScoreRequest, opts ...grpc.CallOption) (*UpdatePostScoreResponse, error)
+	DeletePostScheduler(ctx context.Context, in *DeletePostSchedulerRequest, opts ...grpc.CallOption) (*DeletePostSchedulerResponse, error)
 }
 
 type postServiceClient struct {
@@ -107,6 +109,16 @@ func (c *postServiceClient) UpdatePostScore(ctx context.Context, in *UpdatePostS
 	return out, nil
 }
 
+func (c *postServiceClient) DeletePostScheduler(ctx context.Context, in *DeletePostSchedulerRequest, opts ...grpc.CallOption) (*DeletePostSchedulerResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeletePostSchedulerResponse)
+	err := c.cc.Invoke(ctx, PostService_DeletePostScheduler_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility.
@@ -117,6 +129,7 @@ type PostServiceServer interface {
 	GetPostListByCommunity(context.Context, *GetPostListByCommunityRequest) (*GetPostListByCommunityResponse, error)
 	DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error)
 	UpdatePostScore(context.Context, *UpdatePostScoreRequest) (*UpdatePostScoreResponse, error)
+	DeletePostScheduler(context.Context, *DeletePostSchedulerRequest) (*DeletePostSchedulerResponse, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -144,6 +157,9 @@ func (UnimplementedPostServiceServer) DeletePost(context.Context, *DeletePostReq
 }
 func (UnimplementedPostServiceServer) UpdatePostScore(context.Context, *UpdatePostScoreRequest) (*UpdatePostScoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePostScore not implemented")
+}
+func (UnimplementedPostServiceServer) DeletePostScheduler(context.Context, *DeletePostSchedulerRequest) (*DeletePostSchedulerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeletePostScheduler not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 func (UnimplementedPostServiceServer) testEmbeddedByValue()                     {}
@@ -274,6 +290,24 @@ func _PostService_UpdatePostScore_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_DeletePostScheduler_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeletePostSchedulerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).DeletePostScheduler(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_DeletePostScheduler_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).DeletePostScheduler(ctx, req.(*DeletePostSchedulerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -304,6 +338,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdatePostScore",
 			Handler:    _PostService_UpdatePostScore_Handler,
+		},
+		{
+			MethodName: "DeletePostScheduler",
+			Handler:    _PostService_DeletePostScheduler_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

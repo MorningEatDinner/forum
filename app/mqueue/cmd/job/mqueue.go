@@ -15,6 +15,7 @@ import (
 
 var configFile = flag.String("f", "etc/mqueue.yaml", "Specify the config file")
 
+// 把延迟和周期队列都丢在了这里
 func main() {
 	flag.Parse()
 	var c config.Config

@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	VoteService_VotePost_FullMethodName    = "/pb.VoteService/VotePost"
-	VoteService_GetUserVote_FullMethodName = "/pb.VoteService/GetUserVote"
+	VoteService_VotePost_FullMethodName          = "/pb.VoteService/VotePost"
+	VoteService_GetUserVote_FullMethodName       = "/pb.VoteService/GetUserVote"
+	VoteService_GetPostVoteCounts_FullMethodName = "/pb.VoteService/GetPostVoteCounts"
 )
 
 // VoteServiceClient is the client API for VoteService service.
@@ -29,6 +30,7 @@ const (
 type VoteServiceClient interface {
 	VotePost(ctx context.Context, in *VotePostRequest, opts ...grpc.CallOption) (*VotePostResponse, error)
 	GetUserVote(ctx context.Context, in *GetUserVoteRequest, opts ...grpc.CallOption) (*GetUserVoteResponse, error)
+	GetPostVoteCounts(ctx context.Context, in *GetPostVoteCountsRequest, opts ...grpc.CallOption) (*GetPostVoteCountsResponse, error)
 }
 
 type voteServiceClient struct {
@@ -59,12 +61,23 @@ func (c *voteServiceClient) GetUserVote(ctx context.Context, in *GetUserVoteRequ
 	return out, nil
 }
 
+func (c *voteServiceClient) GetPostVoteCounts(ctx context.Context, in *GetPostVoteCountsRequest, opts ...grpc.CallOption) (*GetPostVoteCountsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPostVoteCountsResponse)
+	err := c.cc.Invoke(ctx, VoteService_GetPostVoteCounts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VoteServiceServer is the server API for VoteService service.
 // All implementations must embed UnimplementedVoteServiceServer
 // for forward compatibility.
 type VoteServiceServer interface {
 	VotePost(context.Context, *VotePostRequest) (*VotePostResponse, error)
 	GetUserVote(context.Context, *GetUserVoteRequest) (*GetUserVoteResponse, error)
+	GetPostVoteCounts(context.Context, *GetPostVoteCountsRequest) (*GetPostVoteCountsResponse, error)
 	mustEmbedUnimplementedVoteServiceServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedVoteServiceServer) VotePost(context.Context, *VotePostRequest
 }
 func (UnimplementedVoteServiceServer) GetUserVote(context.Context, *GetUserVoteRequest) (*GetUserVoteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserVote not implemented")
+}
+func (UnimplementedVoteServiceServer) GetPostVoteCounts(context.Context, *GetPostVoteCountsRequest) (*GetPostVoteCountsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPostVoteCounts not implemented")
 }
 func (UnimplementedVoteServiceServer) mustEmbedUnimplementedVoteServiceServer() {}
 func (UnimplementedVoteServiceServer) testEmbeddedByValue()                     {}
@@ -138,6 +154,24 @@ func _VoteService_GetUserVote_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VoteService_GetPostVoteCounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPostVoteCountsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VoteServiceServer).GetPostVoteCounts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VoteService_GetPostVoteCounts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VoteServiceServer).GetPostVoteCounts(ctx, req.(*GetPostVoteCountsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // VoteService_ServiceDesc is the grpc.ServiceDesc for VoteService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var VoteService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserVote",
 			Handler:    _VoteService_GetUserVote_Handler,
+		},
+		{
+			MethodName: "GetPostVoteCounts",
+			Handler:    _VoteService_GetPostVoteCounts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

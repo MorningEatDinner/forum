@@ -33,6 +33,8 @@ type (
 		FindOneByPostIdUserId(ctx context.Context, postId uint64, userId uint64) (*VoteRecord, error)
 		Update(ctx context.Context, data *VoteRecord) error
 		Delete(ctx context.Context, voteId int64) error
+		CountUpvotes(ctx context.Context, postId uint64) (int64, error)
+		CountDownvotes(ctx context.Context, postId uint64) (int64, error)
 	}
 
 	defaultVoteRecordModel struct {
@@ -145,4 +147,25 @@ func (m *defaultVoteRecordModel) queryPrimary(ctx context.Context, conn sqlx.Sql
 
 func (m *defaultVoteRecordModel) tableName() string {
 	return m.table
+}
+// CountUpvotes 统计赞成票数量
+func (m *defaultVoteRecordModel) CountUpvotes(ctx context.Context, postId uint64) (int64, error) {
+	var count int64
+	query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE `post_id` = ? AND `vote_type` = 1", m.table)
+	err := m.QueryRowNoCacheCtx(ctx, &count, query, postId)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+// CountDownvotes 统计反对票数量
+func (m *defaultVoteRecordModel) CountDownvotes(ctx context.Context, postId uint64) (int64, error) {
+	var count int64
+	query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE `post_id` = ? AND `vote_type` = -1", m.table)
+	err := m.QueryRowNoCacheCtx(ctx, &count, query, postId)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

@@ -36,6 +36,7 @@ func (l *GetPostListLogic) GetPostList(in *pb.GetPostListRequest) (*pb.GetPostLi
 	return l.getPostList0(in)
 }
 
+// 版本1
 func (l *GetPostListLogic) getPostList0(in *pb.GetPostListRequest) (*pb.GetPostListResponse, error) {
 	size := in.PageSize
 	var list []*model.Posts

@@ -19,6 +19,7 @@ const (
 	PostScoreKey     = "post_score"
 	PostUpCountKey   = "post_up_count"
 	PostDownCountKey = "post_down_count"
+	PostDetailKey    = "post_detail:%v"
 
 	// 社区
 	PostCommunityKey = "post_community:%v"

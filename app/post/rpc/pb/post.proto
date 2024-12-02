@@ -11,6 +11,7 @@ service PostService {
     rpc GetPostListByCommunity(GetPostListByCommunityRequest) returns (GetPostListByCommunityResponse) {}
     rpc DeletePost(DeletePostRequest) returns (DeletePostResponse) {}
     rpc UpdatePostScore(UpdatePostScoreRequest) returns (UpdatePostScoreResponse) {} // New method
+    rpc DeletePostScheduler(DeletePostSchedulerRequest) returns (DeletePostSchedulerResponse) {} // 定时删除帖子
 }
 
 // 基础帖子信息
@@ -23,6 +24,15 @@ message Post {
     string createTime = 6;       // 创建时间
     string updatedTime = 7;      // 更新时间
     int64 score = 8; // 帖子分数
+}
+message Author {
+    int64 userId = 1;
+    string username = 2;
+    string email = 3;
+    optional string phone = 4;
+    optional string city = 5;
+    optional string introduction = 6;
+    optional string avatar = 7;
 }
 
 message CreatePostRequest {
@@ -43,6 +53,9 @@ message GetPostDetailRequest {
 
 message GetPostDetailResponse {
     Post post = 1;               // 帖子详情
+    int64 upCount = 2;
+    int64 downCount = 3;
+    Author userInfo = 4; // 作者的信息
 }
 
 message GetPostListRequest {
@@ -90,4 +103,14 @@ message UpdatePostScoreRequest {
 
 message UpdatePostScoreResponse {
     bool success = 1;    // 更新是否成功
+}
+
+// 定时删除帖子请求
+message DeletePostSchedulerRequest {
+
+}
+
+// 定时删除帖子响应
+message DeletePostSchedulerResponse {
+    bool success = 1;            // 定时删除任务是否创建成功
 }

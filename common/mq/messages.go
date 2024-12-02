@@ -11,3 +11,7 @@ type SendEmailCodeMessage struct {
 	Email string
 	Code  string
 }
+
+type DeletePostMessage struct {
+	PostId int64
+}

@@ -50,3 +50,8 @@ func (s *PostServiceServer) UpdatePostScore(ctx context.Context, in *pb.UpdatePo
 	l := logic.NewUpdatePostScoreLogic(ctx, s.svcCtx)
 	return l.UpdatePostScore(in)
 }
+
+func (s *PostServiceServer) DeletePostScheduler(ctx context.Context, in *pb.DeletePostSchedulerRequest) (*pb.DeletePostSchedulerResponse, error) {
+	l := logic.NewDeletePostSchedulerLogic(ctx, s.svcCtx)
+	return l.DeletePostScheduler(in)
+}

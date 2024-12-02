@@ -34,7 +34,7 @@ func (l *NotifyUserUpdateHandler) ProcessTask(ctx context.Context, t *asynq.Task
 		return errors.Wrapf(xerr.NewErrMsg("unmarshal payload failed"), "unmarshal payload failed")
 	}
 
-	// 1. 先看redis中， 这个用户是否已经更新完成个人信息了
+	// TODO: 这里得调用user 服务下的rpc方法才可以获得1. 先看redis中， 这个用户是否已经更新完成个人信息了
 	status, err := l.svcCtx.RedisClient.Get(fmt.Sprintf(globalkey.GetRedisKey(globalkey.UpdatedKey), strconv.FormatInt(p.UserId, 10)))
 	if err != nil && err != redis.Nil {
 		return errors.Wrapf(xerr.NewErrMsg("failed to get user updated info"), "failed to get user updated info")

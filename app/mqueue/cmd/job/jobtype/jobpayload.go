@@ -5,3 +5,7 @@ type DeferNotifyUserPayload struct {
 	UserName string
 	UserId   int64
 }
+
+type SchedulerWriteBackMysqlPostPayload struct {
+	PostId int64
+}

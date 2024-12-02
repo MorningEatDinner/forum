@@ -15,3 +15,19 @@ DB:
 Cache:
   - Host: localhost:26379
     Pass: G62m50oigInC30sf
+RabbitSenderConf:
+  Username: "guest"
+  Password: "guest"
+  Host: "localhost"
+  Port: 5672
+  ContentType: "application/json"
+VoteRpcConf:
+  Endpoints:
+    - 127.0.0.1:3005
+  NonBlock: true
+
+#rpc service
+UserRpcConf:
+  Endpoints:
+    - 127.0.0.1:3001
+  NonBlock: true

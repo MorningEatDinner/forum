@@ -13,10 +13,13 @@ import (
 )
 
 type (
+	Author                         = pb.Author
 	CreatePostRequest              = pb.CreatePostRequest
 	CreatePostResponse             = pb.CreatePostResponse
 	DeletePostRequest              = pb.DeletePostRequest
 	DeletePostResponse             = pb.DeletePostResponse
+	DeletePostSchedulerRequest     = pb.DeletePostSchedulerRequest
+	DeletePostSchedulerResponse    = pb.DeletePostSchedulerResponse
 	GetPostDetailRequest           = pb.GetPostDetailRequest
 	GetPostDetailResponse          = pb.GetPostDetailResponse
 	GetPostListByCommunityRequest  = pb.GetPostListByCommunityRequest
@@ -34,6 +37,7 @@ type (
 		GetPostListByCommunity(ctx context.Context, in *GetPostListByCommunityRequest, opts ...grpc.CallOption) (*GetPostListByCommunityResponse, error)
 		DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error)
 		UpdatePostScore(ctx context.Context, in *UpdatePostScoreRequest, opts ...grpc.CallOption) (*UpdatePostScoreResponse, error)
+		DeletePostScheduler(ctx context.Context, in *DeletePostSchedulerRequest, opts ...grpc.CallOption) (*DeletePostSchedulerResponse, error)
 	}
 
 	defaultPostService struct {
@@ -75,4 +79,9 @@ func (m *defaultPostService) DeletePost(ctx context.Context, in *DeletePostReque
 func (m *defaultPostService) UpdatePostScore(ctx context.Context, in *UpdatePostScoreRequest, opts ...grpc.CallOption) (*UpdatePostScoreResponse, error) {
 	client := pb.NewPostServiceClient(m.cli.Conn())
 	return client.UpdatePostScore(ctx, in, opts...)
+}
+
+func (m *defaultPostService) DeletePostScheduler(ctx context.Context, in *DeletePostSchedulerRequest, opts ...grpc.CallOption) (*DeletePostSchedulerResponse, error) {
+	client := pb.NewPostServiceClient(m.cli.Conn())
+	return client.DeletePostScheduler(ctx, in, opts...)
 }

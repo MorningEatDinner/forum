@@ -2,14 +2,11 @@ package logic
 
 import (
 	"context"
-	"fmt"
-	"forum/common/globalkey"
-	"github.com/pkg/errors"
-	"github.com/zeromicro/go-zero/core/stores/redis"
-	"strconv"
-
+	"forum/app/user/model"
 	"forum/app/vote/rpc/internal/svc"
 	"forum/app/vote/rpc/pb"
+	"forum/common/xerr"
+	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -29,17 +26,18 @@ func NewGetUserVoteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 
 func (l *GetUserVoteLogic) GetUserVote(in *pb.GetUserVoteRequest) (*pb.GetUserVoteResponse, error) {
 	// 获取用户的投票信息
-	key := fmt.Sprintf(globalkey.VoteRecordKey, in.PostId)
-	voteInfo, err := l.svcCtx.RedisClient.Zscore(key, strconv.FormatInt(in.UserId, 10))
-	if err == redis.Nil {
-		return &pb.GetUserVoteResponse{VoteRecord: 0}, nil
+	votedInfo, err := l.svcCtx.VoteRecordModel.FindOneByPostIdUserId(l.ctx, uint64(in.PostId), uint64(in.UserId))
+	if err == model.ErrNotFound {
+		return &pb.GetUserVoteResponse{
+			VoteRecord: 0,
+		}, nil
 	}
 	if err != nil {
-		logx.WithContext(l.ctx).Errorf("get user vote failed, postId: %d, userId: %d", in.PostId, in.UserId)
-		return nil, errors.Wrapf(err, "get user vote failed, postId: %d, userId: %d", in.PostId, in.UserId)
+		logx.WithContext(l.ctx).Errorf("rpc GetUserVote FindOneByPostIdUserId err: %v", err)
+		return nil, errors.Wrapf(xerr.NewErrMsg("投票记录不存在"), "rpc GetUserVote FindOneByPostIdUserId err: %v", err)
 	}
 
 	return &pb.GetUserVoteResponse{
-		VoteRecord: voteInfo,
+		VoteRecord: votedInfo.VoteType,
 	}, nil
 }

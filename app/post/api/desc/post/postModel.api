@@ -22,12 +22,29 @@ type Community {
     UpdatedTime   string `json:"updatedTime"`
 }
 
+
+type AuthorInfo  {
+    UserId int64 `json:"userId"`
+    Username string `json:"username"`
+    Email string `json:"email"`
+    Phone string `json:"phone,optional"`
+    City string `json:"city,optional"`
+    Introduction string `json:"introduction,optional"`
+    Avatar string `json:"avatar,optional"`
+}
+
+type VotedInfo {
+    UpCount int64 `json:"upCount"`
+    DownCount int64 `json:"downCount"`
+}
+
 type PostDetail {
-    AuthorName string `json:"authorName"`  
+    AuthorInfo AuthorInfo `json:"authorInfo"`  
     Post Post `json:"post"`                             // 帖子详情
     Community Community `json:"community"`  
-    VotedNums int `json:"votedNums"`  
+    VotedInfo VotedInfo `json:"votedInfo"`  
 }
+
 
 // 评论信息
 type Comment {

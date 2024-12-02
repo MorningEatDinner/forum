@@ -50,6 +50,7 @@ func (l *CreatePostLogic) CreatePost(in *pb.CreatePostRequest) (*pb.CreatePostRe
 		return nil, err
 	}
 
+	// 上面是存放的数据和当下存放在redis中的数据是不同的
 	pipe.ZAdd(l.ctx, globalkey.GetRedisKey(globalkey.PostScoreKey), redis.Z{
 		Member: id,
 		Score:  float64(time.Now().Unix()),

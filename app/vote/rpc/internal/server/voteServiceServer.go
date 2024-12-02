@@ -32,3 +32,8 @@ func (s *VoteServiceServer) GetUserVote(ctx context.Context, in *pb.GetUserVoteR
 	l := logic.NewGetUserVoteLogic(ctx, s.svcCtx)
 	return l.GetUserVote(in)
 }
+
+func (s *VoteServiceServer) GetPostVoteCounts(ctx context.Context, in *pb.GetPostVoteCountsRequest) (*pb.GetPostVoteCountsResponse, error) {
+	l := logic.NewGetPostVoteCountsLogic(ctx, s.svcCtx)
+	return l.GetPostVoteCounts(in)
+}

@@ -1,9 +1,9 @@
 package svc
 
 import (
+	"forum/app/post/rpc/postservice"
 	"forum/app/vote/model"
 	"forum/app/vote/rpc/internal/config"
-	"forum/tmp/app/post/rpc/postservice"
 	"github.com/zeromicro/go-zero/zrpc"
 
 	"github.com/zeromicro/go-zero/core/stores/redis"

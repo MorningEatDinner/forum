@@ -2,10 +2,13 @@ package logic
 
 import (
 	"context"
+	"forum/app/vote/rpc/voteservice"
 	"forum/common/globalkey"
 	"forum/common/xerr"
 	"github.com/pkg/errors"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"strconv"
+	"time"
 
 	"forum/app/post/rpc/internal/svc"
 	"forum/app/post/rpc/pb"
@@ -32,22 +35,62 @@ func NewUpdatePostScoreLogic(ctx context.Context, svcCtx *svc.ServiceContext) *U
 }
 
 func (l *UpdatePostScoreLogic) UpdatePostScore(in *pb.UpdatePostScoreRequest) (*pb.UpdatePostScoreResponse, error) {
-	// 打印完整的入参信息
 	logx.WithContext(l.ctx).Infof("UpdatePostScore 收到请求参数 - PostId: %d, Score: %d, Up: %v, Down: %v",
 		in.PostId, in.Score, in.Up, in.Down)
-	// 开启Redis事务
+
+	_, err := l.svcCtx.RedisClient.Zscore(globalkey.GetRedisKey(globalkey.PostScoreKey), strconv.FormatInt(in.PostId, 10))
+	if err == redis.Nil {
+		voteRecord, err := l.svcCtx.VoteRpc.GetPostVoteCounts(l.ctx, &voteservice.GetPostVoteCountsRequest{PostId: in.PostId})
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("获取 Vote rpc 数据失败, err: %v", err)
+			return nil, errors.Wrapf(xerr.NewErrMsg("获取 Vote rpc 数据失败"), "err: %v", err)
+		}
+
+		pipe, err := l.svcCtx.RedisClient.TxPipeline()
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("初始化 Redis 事务失败, err: %v", err)
+			return nil, errors.Wrapf(xerr.NewErrMsg("初始化 Redis 事务失败"), "err: %v", err)
+		}
+		defer pipe.Discard()
+
+		// 可以考虑使用一个较早的初始时间或基于其他因素的初始分数
+		initialScore := time.Now().Add(-24 * time.Hour).Unix()
+
+		pipe.ZAdd(l.ctx, globalkey.GetRedisKey(globalkey.PostScoreKey), redis.Z{
+			Member: strconv.FormatInt(in.PostId, 10),
+			Score:  float64(initialScore),
+		})
+		pipe.ZAdd(l.ctx, globalkey.GetRedisKey(globalkey.PostUpCountKey), redis.Z{
+			Member: strconv.FormatInt(in.PostId, 10),
+			Score:  float64(voteRecord.Upvotes),
+		})
+		pipe.ZAdd(l.ctx, globalkey.GetRedisKey(globalkey.PostDownCountKey), redis.Z{
+			Member: strconv.FormatInt(in.PostId, 10),
+			Score:  float64(voteRecord.Downvotes),
+		})
+
+		_, err = pipe.Exec(l.ctx)
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("执行 Redis 事务失败, err: %v", err)
+			return nil, errors.Wrapf(xerr.NewErrMsg("执行 Redis 事务失败"), "err: %v", err)
+		}
+		return &pb.UpdatePostScoreResponse{Success: true}, nil
+	}
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("获取 Redis 数据失败, err: %v", err)
+		return nil, errors.Wrapf(xerr.NewErrMsg("获取 Redis 数据失败"), "err: %v", err)
+	}
+
 	pipe, err := l.svcCtx.RedisClient.TxPipeline()
 	if err != nil {
-		logx.WithContext(l.ctx).Errorf("初始化 Redis 事务失败, err:%v", err)
-		return nil, errors.Wrap(xerr.NewErrMsg("初始化 Redis 事务失败"), err.Error())
+		logx.WithContext(l.ctx).Errorf("初始化 Redis 事务失败, err: %v", err)
+		return nil, errors.Wrapf(xerr.NewErrMsg("初始化 Redis 事务失败"), "err: %v", err)
 	}
 	defer pipe.Discard()
 
 	postKey := strconv.FormatInt(in.PostId, 10)
-	// 更新主分数
 	pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostScoreKey), float64(in.Score*HotBase), postKey)
 
-	// 更新投票分数
 	if in.Up {
 		pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostUpCountKey), float64(in.Score), postKey)
 	}
@@ -56,11 +99,10 @@ func (l *UpdatePostScoreLogic) UpdatePostScore(in *pb.UpdatePostScoreRequest) (*
 		pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostDownCountKey), float64(in.Score), postKey)
 	}
 
-	// 执行事务
 	_, err = pipe.Exec(l.ctx)
 	if err != nil {
-		logx.WithContext(l.ctx).Errorf("执行 Redis 事务失败, err:%v", err)
-		return nil, errors.Wrapf(xerr.NewErrMsg("执行 Redis 事务失败"), "err:%v", err)
+		logx.WithContext(l.ctx).Errorf("执行 Redis 事务失败, err: %v", err)
+		return nil, errors.Wrapf(xerr.NewErrMsg("执行 Redis 事务失败"), "err: %v", err)
 	}
 
 	return &pb.UpdatePostScoreResponse{Success: true}, nil
