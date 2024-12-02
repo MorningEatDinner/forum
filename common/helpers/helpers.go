@@ -46,3 +46,25 @@ func GenerateRandomCode() string {
 	code := fmt.Sprintf("%06v", mathrand.New(mathrand.NewSource(time.Now().UnixNano())).Int31n(1000000))
 	return code
 }
+
+// GenerateRandomUsername: 生成随机用户名
+func GenerateRandomUsername() string {
+	// 使用当前时间作为随机种子
+	mathrand.Seed(time.Now().UnixNano())
+
+	// 定义用户名前缀和后缀
+	prefixes := []string{"user", "guest", "test", "demo"}
+	suffixes := []string{"123", "456", "789", "000"}
+
+	// 随机选择前缀和后缀
+	prefix := prefixes[mathrand.Intn(len(prefixes))]
+	suffix := suffixes[mathrand.Intn(len(suffixes))]
+
+	// 生成一个随机的数字部分
+	numPart := fmt.Sprintf("%03d", mathrand.Intn(1000))
+
+	// 组合成用户名
+	username := fmt.Sprintf("%s_%s_%s", prefix, numPart, suffix)
+
+	return username
+}

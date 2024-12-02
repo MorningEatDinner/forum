@@ -119,7 +119,6 @@ func (l *RegisterByEmailLogic) RegisterByEmail(in *pb.RegisterByEmailRequest) (*
 		logx.WithContext(l.ctx).Errorf("failed to enqueue task for userId: %d, err: %v", id, err)
 		return nil, errors.Wrapf(xerr.NewErrMsg("failed to enqueue task for userId"), "failed to enqueue task for userId: %d", id)
 	}
-
 	return &pb.RegisterByEmailResponse{
 		AccessToken:  tokenResp.AccessToken,
 		ExpiresIn:    tokenResp.AccessExpire,

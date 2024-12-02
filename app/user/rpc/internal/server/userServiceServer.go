@@ -93,3 +93,9 @@ func (s *UserServiceServer) UpdatePassword(ctx context.Context, in *pb.UpdatePas
 	l := logic.NewUpdatePasswordLogic(ctx, s.svcCtx)
 	return l.UpdatePassword(in)
 }
+
+
+func (s *UserServiceServer) GetUserList(ctx context.Context, in *pb.GetUserListRequest) (*pb.GetUserListResponse, error) {
+	l := logic.NewGetUserListLogic(ctx, s.svcCtx)
+	return l.GetUserList(in)
+}

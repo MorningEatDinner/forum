@@ -27,7 +27,8 @@ func (l *CronJob) Register() *asynq.ServeMux {
 	mux := asynq.NewServeMux()
 
 	//scheduler job
-	mux.Handle(jobtype.ScheduleDeletePost, NewNotifyUserUpdateHandler(l.svcCtx))
+	mux.Handle(jobtype.ScheduleDeletePost, NewDeletePostHandler(l.svcCtx))
+	mux.Handle(jobtype.ScheduleHotPostPushing, NewHotPostPushingHandler(l.svcCtx))
 
 	//defer job
 	mux.Handle(jobtype.DeferEmailNotifyJob, NewNotifyUserUpdateHandler(l.svcCtx))

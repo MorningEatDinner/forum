@@ -23,6 +23,8 @@ type (
 	GetEmailCodeResponse    = pb.GetEmailCodeResponse
 	GetMobileCodeRequest    = pb.GetMobileCodeRequest
 	GetMobileCodeResponse   = pb.GetMobileCodeResponse
+	GetUserListRequest      = pb.GetUserListRequest
+	GetUserListResponse     = pb.GetUserListResponse
 	LoginRequest            = pb.LoginRequest
 	LoginResponse           = pb.LoginResponse
 	RefreshTokenRequest     = pb.RefreshTokenRequest
@@ -40,6 +42,7 @@ type (
 	UpdateUserInfoRequest   = pb.UpdateUserInfoRequest
 	UpdateUserInfoResponse  = pb.UpdateUserInfoResponse
 	User                    = pb.User
+	UserInfo                = pb.UserInfo
 	UserInfoRequest         = pb.UserInfoRequest
 	UserInfoResponse        = pb.UserInfoResponse
 
@@ -58,6 +61,7 @@ type (
 		UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error)
 		RegisterByEmail(ctx context.Context, in *RegisterByEmailRequest, opts ...grpc.CallOption) (*RegisterByEmailResponse, error)
 		GetEmailCode(ctx context.Context, in *GetEmailCodeRequest, opts ...grpc.CallOption) (*GetEmailCodeResponse, error)
+		GetUserList(ctx context.Context, in *GetUserListRequest, opts ...grpc.CallOption) (*GetUserListResponse, error)
 	}
 
 	defaultUserService struct {
@@ -139,4 +143,9 @@ func (m *defaultUserService) RegisterByEmail(ctx context.Context, in *RegisterBy
 func (m *defaultUserService) GetEmailCode(ctx context.Context, in *GetEmailCodeRequest, opts ...grpc.CallOption) (*GetEmailCodeResponse, error) {
 	client := pb.NewUserServiceClient(m.cli.Conn())
 	return client.GetEmailCode(ctx, in, opts...)
+}
+
+func (m *defaultUserService) GetUserList(ctx context.Context, in *GetUserListRequest, opts ...grpc.CallOption) (*GetUserListResponse, error) {
+	client := pb.NewUserServiceClient(m.cli.Conn())
+	return client.GetUserList(ctx, in, opts...)
 }

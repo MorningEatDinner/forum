@@ -2,6 +2,9 @@ package public
 
 import (
 	"context"
+	"forum/common/helpers"
+	"forum/common/xerr"
+	"github.com/pkg/errors"
 
 	"forum/app/user/api/internal/svc"
 	"forum/app/user/api/internal/types"
@@ -27,6 +30,22 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 }
 
 func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterResp, err error) {
+	// 检查各个必填字段
+	switch {
+	case req.Phone == "":
+		return nil, errors.Wrapf(xerr.NewErrMsg("invalid parameter"), "email cannot be empty")
+	case req.Code == "":
+		return nil, errors.Wrapf(xerr.NewErrMsg("invalid parameter"), "verification code cannot be empty")
+	case req.Password == "":
+		return nil, errors.Wrapf(xerr.NewErrMsg("invalid parameter"), "password cannot be empty")
+	case req.PasswordConfirm == "":
+		return nil, errors.Wrapf(xerr.NewErrMsg("invalid parameter"), "password confirmation cannot be empty")
+	}
+
+	// 如果用户名为空，生成随机用户名
+	if req.Name == "" {
+		req.Name = helpers.GenerateRandomCode()
+	}
 	registerResp, err := l.svcCtx.UserRpc.Register(l.ctx, &userservice.RegisterRequest{
 		Phone:           &req.Phone,
 		Password:        req.Password,

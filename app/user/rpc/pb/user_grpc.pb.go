@@ -33,6 +33,7 @@ const (
 	UserService_UpdatePassword_FullMethodName  = "/pb.UserService/UpdatePassword"
 	UserService_RegisterByEmail_FullMethodName = "/pb.UserService/RegisterByEmail"
 	UserService_GetEmailCode_FullMethodName    = "/pb.UserService/GetEmailCode"
+	UserService_GetUserList_FullMethodName     = "/pb.UserService/GetUserList"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -53,6 +54,7 @@ type UserServiceClient interface {
 	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error)
 	RegisterByEmail(ctx context.Context, in *RegisterByEmailRequest, opts ...grpc.CallOption) (*RegisterByEmailResponse, error)
 	GetEmailCode(ctx context.Context, in *GetEmailCodeRequest, opts ...grpc.CallOption) (*GetEmailCodeResponse, error)
+	GetUserList(ctx context.Context, in *GetUserListRequest, opts ...grpc.CallOption) (*GetUserListResponse, error)
 }
 
 type userServiceClient struct {
@@ -203,6 +205,16 @@ func (c *userServiceClient) GetEmailCode(ctx context.Context, in *GetEmailCodeRe
 	return out, nil
 }
 
+func (c *userServiceClient) GetUserList(ctx context.Context, in *GetUserListRequest, opts ...grpc.CallOption) (*GetUserListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserListResponse)
+	err := c.cc.Invoke(ctx, UserService_GetUserList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -221,6 +233,7 @@ type UserServiceServer interface {
 	UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordResponse, error)
 	RegisterByEmail(context.Context, *RegisterByEmailRequest) (*RegisterByEmailResponse, error)
 	GetEmailCode(context.Context, *GetEmailCodeRequest) (*GetEmailCodeResponse, error)
+	GetUserList(context.Context, *GetUserListRequest) (*GetUserListResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -272,6 +285,9 @@ func (UnimplementedUserServiceServer) RegisterByEmail(context.Context, *Register
 }
 func (UnimplementedUserServiceServer) GetEmailCode(context.Context, *GetEmailCodeRequest) (*GetEmailCodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEmailCode not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserList(context.Context, *GetUserListRequest) (*GetUserListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserList not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -546,6 +562,24 @@ func _UserService_GetEmailCode_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetUserList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserList(ctx, req.(*GetUserListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -608,6 +642,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetEmailCode",
 			Handler:    _UserService_GetEmailCode_Handler,
+		},
+		{
+			MethodName: "GetUserList",
+			Handler:    _UserService_GetUserList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

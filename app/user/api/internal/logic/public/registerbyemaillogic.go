@@ -5,6 +5,9 @@ import (
 	"forum/app/user/api/internal/svc"
 	"forum/app/user/api/internal/types"
 	"forum/app/user/rpc/userservice"
+	"forum/common/helpers"
+	"forum/common/xerr"
+	"github.com/pkg/errors"
 
 	"github.com/jinzhu/copier"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -26,6 +29,22 @@ func NewRegisterByEmailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *R
 }
 
 func (l *RegisterByEmailLogic) RegisterByEmail(req *types.RegisterByEmailReq) (resp *types.RegisterByEmailResp, err error) {
+	// 检查各个必填字段
+	switch {
+	case req.Email == "":
+		return nil, errors.Wrapf(xerr.NewErrMsg("invalid parameter"), "email cannot be empty")
+	case req.Code == "":
+		return nil, errors.Wrapf(xerr.NewErrMsg("invalid parameter"), "verification code cannot be empty")
+	case req.Password == "":
+		return nil, errors.Wrapf(xerr.NewErrMsg("invalid parameter"), "password cannot be empty")
+	case req.PasswordConfirm == "":
+		return nil, errors.Wrapf(xerr.NewErrMsg("invalid parameter"), "password confirmation cannot be empty")
+	}
+
+	// 如果用户名为空，生成随机用户名
+	if req.Name == "" {
+		req.Name = helpers.GenerateRandomCode()
+	}
 	registerResp, err := l.svcCtx.UserRpc.RegisterByEmail(l.ctx, &userservice.RegisterByEmailRequest{
 		Email:           req.Email,
 		Code:            req.Code,

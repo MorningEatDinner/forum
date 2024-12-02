@@ -19,6 +19,7 @@
     rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse) {}
     rpc RegisterByEmail(RegisterByEmailRequest) returns (RegisterByEmailResponse) {}
     rpc GetEmailCode(GetEmailCodeRequest) returns (GetEmailCodeResponse) {}
+    rpc GetUserList(GetUserListRequest) returns (GetUserListResponse) {} // 新增的RPC方法
   }
 
   // 基础用户信息
@@ -173,4 +174,22 @@
   }
   
   message GetEmailCodeResponse {
+  }
+
+  // 新增：用于列表展示的精简用户信息
+  message UserInfo {
+    string email = 1;
+    string username = 2;
+  }
+
+  // 新增：获取用户列表的请求
+  message GetUserListRequest {
+    int64 lastUserId = 1;    // 上一次请求的最后一个用户ID，用于分页
+    int32 batchSize = 2;     // 每次请求返回的用户数量
+  }
+
+  // 新增：获取用户列表的响应
+  message GetUserListResponse {
+    repeated UserInfo users = 1;  // 用户列表
+    int64 lastUserId = 2;        // 本次请求的最后一个用户ID，用于下一次请求
   }

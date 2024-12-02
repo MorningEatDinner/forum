@@ -37,6 +37,7 @@ type (
 		FindOneByUsername(ctx context.Context, username string) (*Users, error)
 		Update(ctx context.Context, data *Users) error
 		Delete(ctx context.Context, userId int64) error
+		FindUserList(ctx context.Context, lastUserId int64, batchSize int) ([]*Users, error) // 新添加的方法
 	}
 
 	defaultUsersModel struct {
@@ -199,4 +200,26 @@ func (m *defaultUsersModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn,
 
 func (m *defaultUsersModel) tableName() string {
 	return m.table
+}
+
+// 通常情况下， 多行数据不好走缓存的
+func (m *defaultUsersModel) FindUserList(ctx context.Context, lastUserId int64, batchSize int) ([]*Users, error) {
+	var users []*Users
+
+	// 构建查询语句，按用户ID升序排序，从lastUserId之后开始查询
+	query := fmt.Sprintf("select %s from %s where `user_id` > ? order by `user_id` asc limit ?",
+		usersRows, m.table)
+
+	// 执行查询
+	err := m.QueryRowsNoCacheCtx(ctx, &users, query, lastUserId, batchSize)
+	if err != nil {
+		return nil, err
+	}
+
+	// 如果没有找到数据，返回空切片而不是nil
+	if len(users) == 0 {
+		return []*Users{}, nil
+	}
+
+	return users, nil
 }

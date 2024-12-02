@@ -22,9 +22,10 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	return &ServiceContext{
+	ctx := &ServiceContext{
 		Config:      c,
 		AsynqClient: asynq.NewClient(asynq.RedisClientOpt{Addr: c.Redis.Host, Password: c.Redis.Pass}),
+
 		RedisClient: redis.New(c.Redis.Host, func(r *redis.Redis) {
 			r.Type = c.Redis.Type
 			r.Pass = c.Redis.Pass
@@ -33,4 +34,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		RabbitMqClient: rabbitmq.MustNewSender(c.RabbitSenderConf),
 		SMSClient:      sms.NewSmsClient(c.Sms),
 	}
+
+	return ctx
 }
