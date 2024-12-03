@@ -56,12 +56,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       
       - name: Build comment and push
-        uses: docker/build-push-action@v3
-        with:
-          context: app/comment/api
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: |
-            ${{ env.DOCKERHUB_USERNAME }}/comment_api:${{ steps.vars.outputs.sha_short }}
-          cache-from: type=gha    # Utilizing GitHub Actions cache
-          cache-to: type=gha,mode=max
+        run: |
+          docker build -t ${{ env.DOCKERHUB_USERNAME }}/comment:${{ steps.vars.outputs.sha_short }} -f ./app/comment/api/Dockerfile .
+          docker push ${{ env.DOCKERHUB_USERNAME }}/comment:${{ steps.vars.outputs.sha_short }}
