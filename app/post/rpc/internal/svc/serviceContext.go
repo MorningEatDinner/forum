@@ -6,6 +6,7 @@ import (
 	"forum/app/post/rpc/internal/config"
 	"forum/app/user/rpc/userservice"
 	"forum/app/vote/rpc/voteservice"
+
 	"github.com/hibiken/asynq"
 	"github.com/zeromicro/go-queue/rabbitmq"
 	"github.com/zeromicro/go-zero/core/stores/redis"

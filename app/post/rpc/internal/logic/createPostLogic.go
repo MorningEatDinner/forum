@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"forum/common/globalkey"
-	"github.com/zeromicro/go-zero/core/stores/redis"
 	"time"
+
+	"github.com/zeromicro/go-zero/core/stores/redis"
 
 	"forum/app/post/model"
 	"forum/app/post/rpc/internal/svc"
@@ -50,6 +51,7 @@ func (l *CreatePostLogic) CreatePost(in *pb.CreatePostRequest) (*pb.CreatePostRe
 		return nil, err
 	}
 
+	// TODO:  使用消息队列进行优化， 否则可能出现这样的状况， 就是MySQL创建成功了， 但是Redis没有创建成功。使用消息队列能够确保最终一致性。
 	// 上面是存放的数据和当下存放在redis中的数据是不同的
 	pipe.ZAdd(l.ctx, globalkey.GetRedisKey(globalkey.PostScoreKey), redis.Z{
 		Member: id,

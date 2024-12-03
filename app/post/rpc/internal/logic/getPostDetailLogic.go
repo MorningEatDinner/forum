@@ -9,9 +9,10 @@ import (
 	"forum/app/user/rpc/userservice"
 	"forum/common/globalkey"
 	"forum/common/xerr"
+	"strconv"
+
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/stores/redis"
-	"strconv"
 
 	"github.com/jinzhu/copier"
 	"github.com/zeromicro/go-zero/core/logx"

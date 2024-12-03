@@ -28,13 +28,14 @@ var (
 
 type (
 	voteRecordModel interface {
-		Insert(ctx context.Context, data *VoteRecord) (sql.Result, error)
 		FindOne(ctx context.Context, voteId int64) (*VoteRecord, error)
 		FindOneByPostIdUserId(ctx context.Context, postId uint64, userId uint64) (*VoteRecord, error)
 		Update(ctx context.Context, data *VoteRecord) error
 		Delete(ctx context.Context, voteId int64) error
 		CountUpvotes(ctx context.Context, postId uint64) (int64, error)
 		CountDownvotes(ctx context.Context, postId uint64) (int64, error)
+		Trans(ctx context.Context, fn func(ctx context.Context, session sqlx.Session) error) error  // 开启事务
+		Insert(ctx context.Context, session sqlx.Session, data *VoteRecord) (sql.Result, error) 
 	}
 
 	defaultVoteRecordModel struct {
@@ -57,6 +58,13 @@ func newVoteRecordModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Opti
 		CachedConn: sqlc.NewConn(conn, c, opts...),
 		table:      "`vote_record`",
 	}
+}
+
+func (m *defaultVoteRecordModel) Trans(ctx context.Context, fn func(ctx context.Context, session sqlx.Session) error) error {
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+
 }
 
 func (m *defaultVoteRecordModel) Delete(ctx context.Context, voteId int64) error {
@@ -111,15 +119,19 @@ func (m *defaultVoteRecordModel) FindOneByPostIdUserId(ctx context.Context, post
 	}
 }
 
-func (m *defaultVoteRecordModel) Insert(ctx context.Context, data *VoteRecord) (sql.Result, error) {
+
+func (m *defaultVoteRecordModel) Insert(ctx context.Context, session sqlx.Session, data *VoteRecord) (sql.Result, error) {
 	voteRecordPostIdUserIdKey := fmt.Sprintf("%s%v:%v", cacheVoteRecordPostIdUserIdPrefix, data.PostId, data.UserId)
 	voteRecordVoteIdKey := fmt.Sprintf("%s%v", cacheVoteRecordVoteIdPrefix, data.VoteId)
-	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+	return m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, voteRecordRowsExpectAutoSet)
+		if session != nil {
+			return session.ExecCtx(ctx, query, data.PostId, data.UserId, data.VoteType, data.UpdatedTime)
+		}
 		return conn.ExecCtx(ctx, query, data.PostId, data.UserId, data.VoteType, data.UpdatedTime)
 	}, voteRecordPostIdUserIdKey, voteRecordVoteIdKey)
-	return ret, err
 }
+
 
 func (m *defaultVoteRecordModel) Update(ctx context.Context, newData *VoteRecord) error {
 	data, err := m.FindOne(ctx, newData.VoteId)

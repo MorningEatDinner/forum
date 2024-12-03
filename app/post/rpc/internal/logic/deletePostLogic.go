@@ -46,6 +46,8 @@ func (l *DeletePostLogic) DeletePost(in *pb.DeletePostRequest) (*pb.DeletePostRe
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "delete post failed")
 	}
 
+	// 4. 删除帖子的时候， 同时需要删除帖子的所有评论， 这就设计到分布式事务了。
+
 	// TODO: 这里不需要返回东西
 	return &pb.DeletePostResponse{
 		Success: true,

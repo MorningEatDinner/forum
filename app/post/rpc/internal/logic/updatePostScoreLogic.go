@@ -5,10 +5,11 @@ import (
 	"forum/app/vote/rpc/voteservice"
 	"forum/common/globalkey"
 	"forum/common/xerr"
-	"github.com/pkg/errors"
-	"github.com/zeromicro/go-zero/core/stores/redis"
 	"strconv"
 	"time"
+
+	"github.com/pkg/errors"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 
 	"forum/app/post/rpc/internal/svc"
 	"forum/app/post/rpc/pb"
@@ -33,7 +34,6 @@ func NewUpdatePostScoreLogic(ctx context.Context, svcCtx *svc.ServiceContext) *U
 		Logger: logx.WithContext(ctx),
 	}
 }
-
 func (l *UpdatePostScoreLogic) UpdatePostScore(in *pb.UpdatePostScoreRequest) (*pb.UpdatePostScoreResponse, error) {
 	logx.WithContext(l.ctx).Infof("UpdatePostScore 收到请求参数 - PostId: %d, Score: %d, Up: %v, Down: %v",
 		in.PostId, in.Score, in.Up, in.Down)
@@ -88,15 +88,29 @@ func (l *UpdatePostScoreLogic) UpdatePostScore(in *pb.UpdatePostScoreRequest) (*
 	}
 	defer pipe.Discard()
 
-	postKey := strconv.FormatInt(in.PostId, 10)
-	pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostScoreKey), float64(in.Score*HotBase), postKey)
+	if in.Score != 0 {
+		postKey := strconv.FormatInt(in.PostId, 10)
+		pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostScoreKey), float64(in.Score*HotBase), postKey)
 
-	if in.Up {
-		pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostUpCountKey), float64(in.Score), postKey)
-	}
+		if in.Up {
+			pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostUpCountKey), float64(in.Score), postKey)
+		}
 
-	if in.Down {
-		pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostDownCountKey), float64(in.Score), postKey)
+		if in.Down {
+			pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostDownCountKey), float64(in.Score), postKey)
+		}
+	} else {
+		logx.WithContext(l.ctx).Errorf("分数为 0, 不执行更新分数操作， 但是另外两个操作需要更新")
+		if in.Up {
+			pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostUpCountKey), float64(1), strconv.FormatInt(in.PostId, 10))
+		} else {
+			pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostUpCountKey), float64(-1), strconv.FormatInt(in.PostId, 10))
+		}
+		if in.Down {
+			pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostDownCountKey), float64(1), strconv.FormatInt(in.PostId, 10))
+		} else {
+			pipe.ZIncrBy(l.ctx, globalkey.GetRedisKey(globalkey.PostDownCountKey), float64(-1), strconv.FormatInt(in.PostId, 10))
+		}
 	}
 
 	_, err = pipe.Exec(l.ctx)

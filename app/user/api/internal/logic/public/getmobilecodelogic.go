@@ -6,8 +6,10 @@ import (
 	"forum/app/user/api/internal/svc"
 	"forum/app/user/api/internal/types"
 	"forum/app/user/rpc/userservice"
+	"forum/common/xerr"
 
 	"github.com/jinzhu/copier"
+	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -34,7 +36,7 @@ func (l *GetMobileCodeLogic) GetMobileCode(req *types.GetMobileCodeReq) (resp *t
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("GetMobileCode: %v", err)
-		return
+		return nil, errors.Wrapf(xerr.NewErrMsg("获取手机验证码失败"), "GetMobileCode: %v", err)
 	}
 	resp = &types.GetMobileCodeResp{}
 	copier.Copy(resp, getMobilResp)

@@ -6,6 +6,8 @@ import (
 	"forum/app/user/api/internal/logic/public"
 	"forum/app/user/api/internal/svc"
 	"forum/app/user/api/internal/types"
+	"forum/common/result"
+
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
@@ -20,10 +22,6 @@ func GetMobileCodeHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 
 		l := public.NewGetMobileCodeLogic(r.Context(), svcCtx)
 		resp, err := l.GetMobileCode(&req)
-		if err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
-		} else {
-			httpx.OkJsonCtx(r.Context(), w, resp)
-		}
+		result.HttpResult(r, w, resp, err)
 	}
 }

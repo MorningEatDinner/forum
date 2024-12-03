@@ -125,10 +125,10 @@ func (m *defaultCommentsModel) FindCommentListByPostId(ctx context.Context, post
 	offset := (page - 1) * pageSize
 
 	var comments []*Comments
-	query := fmt.Sprintf("select %s from %s where post_id = ? order by create_time desc limit ?, ?", 
+	query := fmt.Sprintf("select %s from %s where post_id = ? order by create_time desc limit ?, ?",
 		commentsRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &comments, query, postId, offset, pageSize)
-	
+
 	switch err {
 	case nil:
 		return comments, nil

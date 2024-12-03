@@ -1,5 +1,7 @@
+// 包声明
 package logic
 
+// 导入所需的包
 import (
 	"context"
 	"forum/app/post/rpc/postservice"
@@ -7,25 +9,31 @@ import (
 	"forum/app/vote/rpc/internal/svc"
 	"forum/app/vote/rpc/pb"
 	"forum/common/xerr"
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
-	"time"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
+// 定义常量
 const (
 	VoteTypeOppose = -1 // 反对
 	VoteTypeCancel = 0  // 取消
 	VoteTypeAgree  = 1  // 赞成
-	ScoreIncrHot   = 1
-	ScoreDescHot   = -1
+	ScoreIncrHot   = 1  // 热度分数增加值
+	ScoreDescHot   = -1 // 热度分数减少值
+	ScoreNotChange = 0  // 不改变分数
 )
 
+// VotePostLogic 结构体定义
 type VotePostLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
+// NewVotePostLogic 创建 VotePostLogic 实例的函数
 func NewVotePostLogic(ctx context.Context, svcCtx *svc.ServiceContext) *VotePostLogic {
 	return &VotePostLogic{
 		ctx:    ctx,
@@ -34,82 +42,130 @@ func NewVotePostLogic(ctx context.Context, svcCtx *svc.ServiceContext) *VotePost
 	}
 }
 
+// VotePost 方法实现投票逻辑
 func (l *VotePostLogic) VotePost(in *pb.VotePostRequest) (*pb.VotePostResponse, error) {
-	// 1. 查询是否存在投票记录
+	// 将请求中的投票类型转换为 int64
 	voteTypeReq := int64(in.VoteType)
-	votedInfo, err := l.svcCtx.VoteRecordModel.FindOneByPostIdUserId(l.ctx, uint64(in.PostId), uint64(in.UserId))
-	if err == model.ErrNotFound {
-		// 如果没有投票记录
-		if voteTypeReq != VoteTypeCancel {
-			// 如果投票类型与之前的类型不一致，直接更新
-			_, err = l.svcCtx.VoteRecordModel.Insert(l.ctx, &model.VoteRecord{
-				PostId:      uint64(in.PostId),
-				UserId:      uint64(in.UserId),
-				VoteType:    int64(in.VoteType),
-				CreateTime:  time.Now(),
-				UpdatedTime: time.Now(),
-			})
-			if err != nil {
-				return nil, errors.Wrapf(xerr.NewErrMsg("投票失败"), "insert vote record failed, err: %v", err)
-			}
 
-			// 调用rpc方法新增post的分数
-			_, err = l.svcCtx.PostRpc.UpdatePostScore(l.ctx, &postservice.UpdatePostScoreRequest{
-				PostId: in.PostId,
-				Score:  ScoreIncrHot,
-				Up:     in.VoteType == VoteTypeAgree,
-				Down:   in.VoteType == VoteTypeOppose,
-			})
-			if err != nil {
-				return nil, errors.Wrapf(err, "update post score failed, postId: %d, userId: %d", in.PostId, in.UserId)
+	// 开启事务处理投票逻辑
+	err := l.svcCtx.VoteRecordModel.Trans(l.ctx, func(ctx context.Context, session sqlx.Session) error {
+		// 查询用户是否已对该帖子投票
+		votedInfo, err := l.svcCtx.VoteRecordModel.FindOneByPostIdUserId(l.ctx, uint64(in.PostId), uint64(in.UserId))
+		if err == model.ErrNotFound {
+			// 如果未找到投票记录且不是取消投票，则处理新投票
+			if voteTypeReq != VoteTypeCancel {
+				err = l.handleNewVote(ctx, session, in)
+				if err != nil {
+					return err
+				}
 			}
+			return nil
 		}
-		// 如果投 原来没有投票记录， 现在投0， 那么直接返回
-		return &pb.VotePostResponse{
-			Success: true,
-		}, nil
-	}
-	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrMsg("投票失败"), "find vote record failed, err: %v", err)
-	}
-
-	// 2. 已投票且方向相同则返回
-	if votedInfo.VoteType != 0 && votedInfo.VoteType == int64(in.VoteType) {
-		return nil, errors.New("already voted with same direction")
-	}
-
-	if votedInfo.VoteType != VoteTypeCancel {
-		// 如果取消投票， 就是现在投票操作为0， 那么就删除， 并且减少post服务中的分数
-		if in.VoteType == VoteTypeCancel {
-			// 那么删除投票数据
-			err = l.svcCtx.VoteRecordModel.Delete(l.ctx, votedInfo.VoteId)
-			if err != nil {
-				return nil, errors.Wrapf(xerr.NewErrMsg("投票失败"), "delete vote record failed, err: %v", err)
-			}
-			// TODO: 调用rpc方法减少post 服务中的分数， 这里可以改用消息队列来实现
-			// 因为是撤销， 所以要减少分数
-			_, err = l.svcCtx.PostRpc.UpdatePostScore(l.ctx, &postservice.UpdatePostScoreRequest{
-				PostId: in.PostId,
-				Score:  ScoreDescHot,
-				Up:     votedInfo.VoteType == VoteTypeAgree,
-				Down:   votedInfo.VoteType == VoteTypeOppose,
-			})
-			if err != nil {
-				return nil, errors.Wrapf(err, "update post score failed, postId: %d, userId: %d", in.PostId, in.UserId)
-			}
-			return &pb.VotePostResponse{Success: true}, nil
-		}
-
-		// 现在是要修改投票的方向
-		changeScore := int64(in.VoteType) - int64(votedInfo.VoteType)
-		votedInfo.VoteType += changeScore
-		err = l.svcCtx.VoteRecordModel.Update(l.ctx, votedInfo)
 		if err != nil {
-			return nil, errors.Wrapf(xerr.NewErrMsg("投票失败"), "update vote record failed, err: %v", err)
+			return errors.Wrap(err, "查询投票记录失败")
 		}
-		// 转换投票方向不会对热度造成影响， 所以不需要调用rpc方法
-		return &pb.VotePostResponse{Success: true}, nil
+
+		// 如果投票类型相同，则返回错误
+		if votedInfo.VoteType != 0 && votedInfo.VoteType == int64(in.VoteType) {
+			return l.handleSameVote(in)
+		}
+
+		// 处理取消投票或更改投票
+		if votedInfo.VoteType != VoteTypeCancel {
+			if in.VoteType == VoteTypeCancel {
+				return l.handleCancelVote(ctx, votedInfo, in)
+			}
+			return l.handleChangeVote(ctx, votedInfo, in)
+		}
+
+		return nil
+	})
+
+	// 处理投票错误
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("投票失败: %v", err)
+		return nil, errors.Wrap(xerr.NewErrMsg("投票失败"), err.Error())
 	}
 
-	return nil, errors.Wrapf(xerr.NewErrMsg("server error"), "vote post failed, postId: %d, userId: %d", in.PostId, in.UserId)
+	// 返回投票成功响应
+	return &pb.VotePostResponse{Success: true}, nil
+}
+
+// handleNewVote 处理新投票
+func (l *VotePostLogic) handleNewVote(ctx context.Context, session sqlx.Session, in *pb.VotePostRequest) error {
+	// 插入新的投票记录
+	_, err := l.svcCtx.VoteRecordModel.Insert(ctx, session, &model.VoteRecord{
+		PostId:      uint64(in.PostId),
+		UserId:      uint64(in.UserId),
+		VoteType:    int64(in.VoteType),
+		CreateTime:  time.Now(),
+		UpdatedTime: time.Now(),
+	})
+	if err != nil {
+		return errors.Wrap(xerr.NewErrMsg("投票失败"), "插入投票记录失败")
+	}
+
+	// 更新帖子分数
+	_, err = l.svcCtx.PostRpc.UpdatePostScore(ctx, &postservice.UpdatePostScoreRequest{
+		PostId: in.PostId,
+		Score:  ScoreIncrHot,
+		Up:     in.VoteType == VoteTypeAgree,
+		Down:   in.VoteType == VoteTypeOppose,
+	})
+	if err != nil {
+		return errors.Wrapf(err, "更新帖子分数失败, postId: %d, userId: %d", in.PostId, in.UserId)
+	}
+
+	return nil
+}
+
+// handleSameVote 处理重复投票
+func (l *VotePostLogic) handleSameVote(in *pb.VotePostRequest) error {
+	logx.WithContext(l.ctx).Errorf("投票类型相同, postId: %d, userId: %d", in.PostId, in.UserId)
+	return errors.Wrapf(xerr.NewErrMsg("投票失败"), "投票类型相同, postId: %d, userId: %d", in.PostId, in.UserId)
+}
+
+// handleCancelVote 处理取消投票
+func (l *VotePostLogic) handleCancelVote(ctx context.Context, votedInfo *model.VoteRecord, in *pb.VotePostRequest) error {
+	// 删除投票记录
+	err := l.svcCtx.VoteRecordModel.Delete(ctx, votedInfo.VoteId)
+	if err != nil {
+		return errors.Wrap(xerr.NewErrMsg("投票失败"), "删除投票记录失败")
+	}
+
+	// 更新帖子分数
+	_, err = l.svcCtx.PostRpc.UpdatePostScore(ctx, &postservice.UpdatePostScoreRequest{
+		PostId: in.PostId,
+		Score:  ScoreDescHot,
+		Up:     votedInfo.VoteType == VoteTypeAgree,
+		Down:   votedInfo.VoteType == VoteTypeOppose,
+	})
+	if err != nil {
+		return errors.Wrapf(err, "更新帖子分数失败, postId: %d, userId: %d", in.PostId, in.UserId)
+	}
+
+	return nil
+}
+
+// handleChangeVote 处理更改投票
+func (l *VotePostLogic) handleChangeVote(ctx context.Context, votedInfo *model.VoteRecord, in *pb.VotePostRequest) error {
+	// 计算分数变化
+	changeScore := int64(in.VoteType) - int64(votedInfo.VoteType)
+	votedInfo.VoteType += changeScore
+
+	// 更新投票记录
+	err := l.svcCtx.VoteRecordModel.Update(ctx, votedInfo)
+	if err != nil {
+		return errors.Wrap(xerr.NewErrMsg("投票失败"), "更新投票记录失败")
+	}
+	// 更新投票请求不会导致分数的变化，但是会导致帖子的正反向票数的变化，因此还是需要更新
+	// 更新帖子分数
+	_, err = l.svcCtx.PostRpc.UpdatePostScore(ctx, &postservice.UpdatePostScoreRequest{
+		PostId: in.PostId,
+		Score:  ScoreNotChange,
+		Up:     votedInfo.VoteType == VoteTypeAgree,
+		Down:   votedInfo.VoteType == VoteTypeOppose,
+	})
+
+	return nil
 }

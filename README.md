@@ -18,6 +18,6 @@ GO111MODULE=on  go install github.com/mailhog/MailHog@latest
 ```
 启动MailHog
 ```bash
-MailHog -smtp-bind-addr 0.0.0.0:1030 -api-bind-addr 127.0.0.1:18026 -ui-bind-addr 127.0.0.1:18026 
+mailhog -smtp-bind-addr 0.0.0.0:11030 -api-bind-addr 127.0.0.1:18026 -ui-bind-addr 127.0.0.1:18026 
 ```
 访问 ` 127.0.0.1:18026 ` 可以看到邮箱界面![alt text](image.png) 

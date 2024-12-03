@@ -2,7 +2,7 @@ package public
 
 import (
 	"context"
-	"forum/tmp/app/post/rpc/postservice"
+	"forum/app/post/rpc/postservice"
 
 	"forum/app/community/rpc/communityservice"
 	"forum/app/post/api/internal/svc"

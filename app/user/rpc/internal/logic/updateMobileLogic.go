@@ -68,6 +68,7 @@ func (l *UpdateMobileLogic) UpdateMobile(in *pb.UpdateMobileRequest) (*pb.Update
 	// 4. 修改手机号码
 	user.Phone = phone
 
+	// 不需要使用事务， 即使出现了并发的错误， 两个账号同时更新为一个手机号， 但是我给手机号码设置了唯一值索引， 第二个更新操作不会成功
 	// 5. 更新用户信息
 	err = l.svcCtx.UserModel.Update(l.ctx, user)
 	if err != nil {

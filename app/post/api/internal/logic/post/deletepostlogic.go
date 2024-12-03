@@ -41,7 +41,8 @@ func (l *DeletePostLogic) DeletePost(req *types.DeletePostReq) (resp *types.Dele
 	resp = &types.DeletePostResp{}
 	copier.Copy(resp, delResp)
 
-	// 删除帖子的时候， 评分表也需要删除对应的数据
+	// TODO: 调用 评论服务 删除评论
+	// TODO: 调用点赞服务， 删除点赞记录
 
 	return
 }
