@@ -19,10 +19,13 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
+      - name: pull goctl
+        run: | 
+          docker pull kevinwan/goctl
       - name: Create comment Dockerfile
         run: |
           cd app/comment/api
-          goctl docker -go comment.go
+          docker run kevinwan/goctl docker -go comment.go
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to Docker Hub
