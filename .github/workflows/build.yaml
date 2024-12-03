@@ -41,19 +41,11 @@ jobs:
           
           # 使用当前用户权限运行goctl
           docker run --user $CURRENT_UID:$CURRENT_GID \
-            -v ${PWD}:/app \
-            -w /app \
+            -v ${PWD}:/forum \
+            -w /forum/app/comment/api \
             kevinwan/goctl docker \
-            -go ./app/comment/api/comment.go
-          
-          # 验证Dockerfile是否创建成功
-          if [ ! -f "./Dockerfile" ]; then
-            echo "Dockerfile 生成失败"
-            exit 1
-          fi
-      
-      # 其余步骤保持不变...
-      
+            -go ./comment.go
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       
@@ -70,6 +62,6 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ env.DOCKERHUB_USERNAME }}/comment:${{ steps.vars.outputs.sha_short }}
+            ${{ env.DOCKERHUB_USERNAME }}/comment_api:${{ steps.vars.outputs.sha_short }}
           cache-from: type=gha    # Utilizing GitHub Actions cache
           cache-to: type=gha,mode=max
