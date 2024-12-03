@@ -1,5 +1,4 @@
 name: build
-
 on:
   push:
     branches:
@@ -11,7 +10,7 @@ env:
 jobs:
   docker:
     runs-on: ubuntu-latest
-    permissions:      # Explicitly declaring permissions is a security best practice
+    permissions:
       contents: read
       packages: write
     
@@ -19,31 +18,41 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0    # Useful for getting accurate Git history if needed
+          fetch-depth: 0
       
       - name: Set outputs
         id: vars
-        # Using the newer GITHUB_OUTPUT syntax instead of deprecated set-output
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       
-      - name: pull goctl
-        run: | 
-          docker pull kevinwan/goctl
+      - name: Pull goctl
+        run: docker pull kevinwan/goctl
       
       - name: Create comment Dockerfile
-        # Adding error handling and verification
         run: |
-          # 确保工作目录存在并设置正确的权限
-          sudo mkdir -p /workspace
-          sudo chmod 777 /workspace
-          docker run -v ${PWD}:/workspace -w /workspace kevinwan/goctl docker -go ./app/comment/api/comment.go
+          # 获取当前用户ID和组ID
+          CURRENT_UID=$(id -u)
+          CURRENT_GID=$(id -g)
+          
+          # 确保当前目录有正确的权限
+          chmod -R 755 .
+          
+          # 使用当前用户权限运行goctl
+          docker run --user $CURRENT_UID:$CURRENT_GID \
+            -v ${PWD}:/app \
+            -w /app \
+            kevinwan/goctl docker \
+            -go ./app/comment/api/comment.go
+          
+          # 验证Dockerfile是否创建成功
           if [ ! -f "./Dockerfile" ]; then
-            echo "Dockerfile was not generated successfully"
+            echo "Dockerfile 生成失败"
             exit 1
           fi
+      
+      # 其余步骤保持不变...
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
