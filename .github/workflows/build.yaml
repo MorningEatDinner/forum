@@ -58,7 +58,7 @@ jobs:
       - name: Build comment and push
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: app/comment/api
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
