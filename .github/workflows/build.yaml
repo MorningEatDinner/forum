@@ -22,6 +22,8 @@ jobs:
       - name: pull goctl
         run: | 
           docker pull kevinwan/goctl
+      - name: Print current directory
+        run: pwd
       - name: Create comment Dockerfile
         run: |
           docker run kevinwan/goctl docker -go ./app/comment/api/comment.go
