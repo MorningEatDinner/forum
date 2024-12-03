@@ -36,6 +36,9 @@ jobs:
       - name: Create comment Dockerfile
         # Adding error handling and verification
         run: |
+          # 确保工作目录存在并设置正确的权限
+          sudo mkdir -p /workspace
+          sudo chmod 777 /workspace
           docker run -v ${PWD}:/workspace -w /workspace kevinwan/goctl docker -go ./app/comment/api/comment.go
           if [ ! -f "./Dockerfile" ]; then
             echo "Dockerfile was not generated successfully"
