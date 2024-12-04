@@ -48,7 +48,7 @@ func (l *CreateCommentLogic) CreateComment(req *types.CreateCommentReq) (resp *t
 		logx.WithContext(l.ctx).Errorf("创建评论失败: %v", err)
 		return nil, err
 	}
-
+	logx.WithContext(l.ctx).Infof("创建评论成功: %v", commentResp)
 	resp = &types.CreateCommentResp{}
 	copier.Copy(resp, commentResp)
 
