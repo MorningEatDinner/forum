@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"forum/app/user/mq/internal/config"
-	"forum/app/user/mq/internal/listen"
+	"forum/app/vote/mq/internal/config"
+	"forum/app/vote/mq/internal/listen"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
