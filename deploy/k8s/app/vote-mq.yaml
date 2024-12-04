@@ -1,35 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vote-rpc-deployment
+  name: vote-mq-deployment
   labels:
-    app: vote-rpc
+    app: vote-mq
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: vote-rpc
+      app: vote-mq
   template:
     metadata:
       labels:
-        app: vote-rpc
+        app: vote-mq
     spec:
       serviceAccount: find-endpoints
       containers:
-      - name: vote-rpc
-        image: morningeatdinner/vote-rpc:ad2b2a7
+      - name: vote-mq
+        image: morningeatdinner/vote-mq:3257c08
         ports:
-        - containerPort: 3005
+        - containerPort: 5006
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: vote-rpc-service
+  name: vote-mq-service
 spec:
   selector:
-    app: vote-rpc
+    app: vote-mq
   ports:
     - protocol: TCP
-      port: 3005
-      targetPort: 3005
+      port: 5006
+      targetPort: 5006
   type: ClusterIP

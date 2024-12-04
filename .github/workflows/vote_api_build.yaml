@@ -1,10 +1,10 @@
-name: build-vote-rpcs
+name: build-vote-api
 on:
   push:
     branches:
       - "main"
     paths:
-      - 'app/vote/rpc/**' 
+      - 'app/vote/api/**' 
 
 env:
   DOCKERHUB_USERNAME: morningeatdinner
@@ -32,7 +32,7 @@ jobs:
       - name: Pull goctl
         run: docker pull kevinwan/goctl
       
-      - name: Create vote Dockerfile
+      - name: Create vote API Dockerfile
         run: |
           # 获取当前用户ID和组ID
           CURRENT_UID=$(id -u)
@@ -44,7 +44,7 @@ jobs:
           # 使用当前用户权限运行goctl
           docker run --user $CURRENT_UID:$CURRENT_GID \
             -v ${PWD}:/forum \
-            -w /forum/app/vote/rpc \
+            -w /forum/app/vote/api \
             kevinwan/goctl docker \
             -go ./vote.go
 
@@ -57,7 +57,7 @@ jobs:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       
-      - name: Build vote and push
+      - name: Build vote API and push
         run: |
-          docker build -t ${{ env.DOCKERHUB_USERNAME }}/vote-rpc:${{ steps.vars.outputs.sha_short }} -f ./app/vote/rpc/Dockerfile .
-          docker push ${{ env.DOCKERHUB_USERNAME }}/vote-rpc:${{ steps.vars.outputs.sha_short }}
+          docker build -t ${{ env.DOCKERHUB_USERNAME }}/vote-api:${{ steps.vars.outputs.sha_short }} -f ./app/vote/api/Dockerfile .
+          docker push ${{ env.DOCKERHUB_USERNAME }}/vote-api:${{ steps.vars.outputs.sha_short }}
