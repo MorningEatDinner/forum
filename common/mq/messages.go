@@ -15,3 +15,10 @@ type SendEmailCodeMessage struct {
 type DeletePostMessage struct {
 	PostId int64
 }
+
+type UpdatePostScore struct {
+	PostId int64
+	Score  int64
+	Up     bool
+	Down   bool
+}

@@ -14,6 +14,7 @@ spec:
       labels:
         app: vote-rpc
     spec:
+      serviceAccount: find-endpoints
       containers:
       - name: vote-rpc
         image: morningeatdinner/vote-rpc:42d5b90
@@ -31,5 +32,4 @@ spec:
     - protocol: TCP
       port: 3005
       targetPort: 3005
-      nodePort: 30005
-  type: NodePort
+  type: ClusterIP

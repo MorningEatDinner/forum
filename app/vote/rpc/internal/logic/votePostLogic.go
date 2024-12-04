@@ -4,10 +4,11 @@ package logic
 // 导入所需的包
 import (
 	"context"
-	"forum/app/post/rpc/postservice"
+	"encoding/json"
 	"forum/app/vote/model"
 	"forum/app/vote/rpc/internal/svc"
 	"forum/app/vote/rpc/pb"
+	"forum/common/mq"
 	"forum/common/xerr"
 	"time"
 
@@ -91,6 +92,12 @@ func (l *VotePostLogic) VotePost(in *pb.VotePostRequest) (*pb.VotePostResponse, 
 	return &pb.VotePostResponse{Success: true}, nil
 }
 
+// handleSameVote 处理重复投票
+func (l *VotePostLogic) handleSameVote(in *pb.VotePostRequest) error {
+	logx.WithContext(l.ctx).Errorf("投票类型相同, postId: %d, userId: %d", in.PostId, in.UserId)
+	return errors.Wrapf(xerr.NewErrMsg("投票失败"), "投票类型相同, postId: %d, userId: %d", in.PostId, in.UserId)
+}
+
 // handleNewVote 处理新投票
 func (l *VotePostLogic) handleNewVote(ctx context.Context, session sqlx.Session, in *pb.VotePostRequest) error {
 	// 插入新的投票记录
@@ -106,23 +113,12 @@ func (l *VotePostLogic) handleNewVote(ctx context.Context, session sqlx.Session,
 	}
 
 	// 更新帖子分数
-	_, err = l.svcCtx.PostRpc.UpdatePostScore(ctx, &postservice.UpdatePostScoreRequest{
-		PostId: in.PostId,
-		Score:  ScoreIncrHot,
-		Up:     in.VoteType == VoteTypeAgree,
-		Down:   in.VoteType == VoteTypeOppose,
-	})
+	err = l.updatePostVoteScore(ctx, in.PostId, ScoreIncrHot, int64(in.VoteType))
 	if err != nil {
-		return errors.Wrapf(err, "更新帖子分数失败, postId: %d, userId: %d", in.PostId, in.UserId)
+		return err
 	}
 
 	return nil
-}
-
-// handleSameVote 处理重复投票
-func (l *VotePostLogic) handleSameVote(in *pb.VotePostRequest) error {
-	logx.WithContext(l.ctx).Errorf("投票类型相同, postId: %d, userId: %d", in.PostId, in.UserId)
-	return errors.Wrapf(xerr.NewErrMsg("投票失败"), "投票类型相同, postId: %d, userId: %d", in.PostId, in.UserId)
 }
 
 // handleCancelVote 处理取消投票
@@ -134,14 +130,9 @@ func (l *VotePostLogic) handleCancelVote(ctx context.Context, votedInfo *model.V
 	}
 
 	// 更新帖子分数
-	_, err = l.svcCtx.PostRpc.UpdatePostScore(ctx, &postservice.UpdatePostScoreRequest{
-		PostId: in.PostId,
-		Score:  ScoreDescHot,
-		Up:     votedInfo.VoteType == VoteTypeAgree,
-		Down:   votedInfo.VoteType == VoteTypeOppose,
-	})
+	err = l.updatePostVoteScore(ctx, in.PostId, ScoreDescHot, votedInfo.VoteType)
 	if err != nil {
-		return errors.Wrapf(err, "更新帖子分数失败, postId: %d, userId: %d", in.PostId, in.UserId)
+		return err
 	}
 
 	return nil
@@ -158,14 +149,38 @@ func (l *VotePostLogic) handleChangeVote(ctx context.Context, votedInfo *model.V
 	if err != nil {
 		return errors.Wrap(xerr.NewErrMsg("投票失败"), "更新投票记录失败")
 	}
-	// 更新投票请求不会导致分数的变化，但是会导致帖子的正反向票数的变化，因此还是需要更新
+
 	// 更新帖子分数
-	_, err = l.svcCtx.PostRpc.UpdatePostScore(ctx, &postservice.UpdatePostScoreRequest{
-		PostId: in.PostId,
-		Score:  ScoreNotChange,
-		Up:     votedInfo.VoteType == VoteTypeAgree,
-		Down:   votedInfo.VoteType == VoteTypeOppose,
-	})
+	err = l.updatePostVoteScore(ctx, in.PostId, ScoreNotChange, votedInfo.VoteType)
+	if err != nil {
+		return err
+	}
 
 	return nil
+}
+
+// updatePostVoteScore 更新帖子的投票分数
+func (l *VotePostLogic) updatePostVoteScore(ctx context.Context, postId int64, score int64, voteType int64) error {
+	// 根据投票类型确定是增加还是减少
+	isUp := voteType == VoteTypeAgree
+	isDown := voteType == VoteTypeOppose
+
+	// 调用RPC更新帖子分数
+	payload := mq.UpdatePostScore{
+		PostId: postId,
+		Score:  score,
+		Up:     isUp,
+		Down:   isDown,
+	}
+	body, err := json.Marshal(payload)
+	if err != nil {
+		logx.WithContext(ctx).Errorf("marshal message failed, err: %v", err.Error())
+		return errors.Wrapf(xerr.NewErrMsg("marshal message failed"), "marshal message failed, err: %v", err.Error())
+	}
+	// _, err := l.svcCtx.PostRpc.UpdatePostScore(ctx, req)
+	// if err != nil {
+	// 	return errors.Wrapf(err, "更新帖子分数失败, postId: %d", postId)
+	// }
+
+	return l.svcCtx.RabbitMqClient.Send("vote", "update_post_score", body)
 }

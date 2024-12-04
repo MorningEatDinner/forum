@@ -14,6 +14,7 @@ spec:
       labels:
         app: post-rpc
     spec:
+      serviceAccount: find-endpoints
       containers:
       - name: post-rpc
         image: morningeatdinner/post-rpc:42d5b90

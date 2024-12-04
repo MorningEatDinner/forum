@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user-mq-deployment
+  name: post-mq-deployment
   labels:
-    app: user-mq
+    app: post-mq
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: user-mq
+      app: post-mq
   template:
     metadata:
       labels:
-        app: user-mq
+        app: post-mq
     spec:
       containers:
-      - name: user-mq
-        image: morningeatdinner/user-mq:40c2bec
+      - name: post-mq
+        image: morningeatdinner/post-mq:cfd59a0
         ports:
         - containerPort: 5001
         env:                                    # 添加环境变量配置
@@ -34,13 +34,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: user-mq-service
+  name: post-mq-service
 spec:
   selector:
-    app: user-mq
+    app: post-mq
   ports:
     - protocol: TCP
       port: 5001
       targetPort: 5001
-      nodePort: 30005
-  type: NodePort
+  type: ClusterIP

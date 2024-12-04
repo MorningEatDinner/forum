@@ -1,21 +1,20 @@
 package svc
 
 import (
-	"forum/app/post/rpc/postservice"
 	"forum/app/vote/model"
 	"forum/app/vote/rpc/internal/config"
-	"github.com/zeromicro/go-zero/zrpc"
 
+	"github.com/zeromicro/go-queue/rabbitmq"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
 type ServiceContext struct {
-	Config config.Config
+	Config         config.Config
+	RabbitMqClient rabbitmq.Sender
 
 	RedisClient     *redis.Redis
 	VoteRecordModel model.VoteRecordModel
-	PostRpc         postservice.PostService
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -23,6 +22,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config:          c,
 		RedisClient:     redis.MustNewRedis(c.Redis.RedisConf),
 		VoteRecordModel: model.NewVoteRecordModel(sqlx.NewMysql(c.DB.DataSource), c.Cache),
-		PostRpc:         postservice.NewPostService(zrpc.MustNewClient(c.PostRpcConf)),
+		RabbitMqClient:  rabbitmq.MustNewSender(c.RabbitSenderConf),
 	}
 }

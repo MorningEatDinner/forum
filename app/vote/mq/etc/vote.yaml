@@ -1,0 +1,24 @@
+Name: vote-mq
+Host: 0.0.0.0
+Port: 5005
+Mode: dev
+Redis:
+  Host: redis.default.svc.cluster.local:6379
+  Type: node
+  Pass: G62m50oigInC30sf
+  Key: vote-mq
+
+PostRpcConf:
+  # Endpoints:
+  #   - 127.0.0.1:3003
+  # NonBlock: true
+  Target: k8s://default/post-rpc-service:3003
+
+PostUpdateMQConf:
+  Username: guest
+  Password: guest
+  Host: rabbitmq.default.svc.cluster.local
+  Port: 5672
+  ListenerQueues:
+    -
+      Name: update_post_score

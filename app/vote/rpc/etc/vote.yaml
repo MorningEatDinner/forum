@@ -13,8 +13,9 @@ Cache:
   - Host: redis.default.svc.cluster.local:6379
     Pass: G62m50oigInC30sf
 
-PostRpcConf:
-  # Endpoints:
-  #   - 127.0.0.1:3003
-  # NonBlock: true
-  Target: k8s://default/post-rpc-service:3003
+RabbitSenderConf:
+  Username: "guest"
+  Password: "guest"
+  Host: "rabbitmq.default.svc.cluster.local"
+  Port: 5672
+  ContentType: "application/json"
