@@ -27,6 +27,6 @@ func NewGetCommunityDetailsLogic(ctx context.Context, svcCtx *svc.ServiceContext
 // 不需要写
 func (l *GetCommunityDetailsLogic) GetCommunityDetails(req *types.GetCommunityDetailsReq) (resp *types.GetCommunityDetailsResp, err error) {
 	// todo: add your logic here and delete this line
-
+	logx.WithContext(l.ctx).Infof("req: %v", req)
 	return
 }
