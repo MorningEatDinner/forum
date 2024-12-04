@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"forum/app/mqueue/cmd/job/internal/config"
 	"forum/app/mqueue/cmd/job/internal/logic"
 	"forum/app/mqueue/cmd/job/internal/svc"
@@ -31,6 +32,7 @@ func main() {
 	ctx := context.Background()
 	cronJob := logic.NewCronJob(ctx, svcContext)
 	mux := cronJob.Register()
+	fmt.Println("mqx start")
 
 	if err := svcContext.AsynqServer.Run(mux); err != nil {
 		logx.WithContext(ctx).Errorf("!!!CronJobErr!!! run err:%+v", err)

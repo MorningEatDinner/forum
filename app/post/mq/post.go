@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"forum/app/post/mq/internal/config"
 	"forum/app/post/mq/internal/listen"
 
@@ -28,6 +29,6 @@ func main() {
 	for _, mq := range listen.Mqs(c) {
 		serviceGroup.Add(mq)
 	}
-
+	fmt.Println("start")
 	serviceGroup.Start()
 }
