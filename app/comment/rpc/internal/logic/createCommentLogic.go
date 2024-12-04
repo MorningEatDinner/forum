@@ -44,7 +44,7 @@ func (l *CreateCommentLogic) CreateComment(in *pb.CreateCommentRequest) (*pb.Cre
 	// TODO：创建帖子评论数表， 后面就需要增加了
 	id, _ := insertRes.LastInsertId()
 	insertComment.CommentId = id
-
+	logx.WithContext(l.ctx).Infof("创建评论成功: %v", insertComment)
 	pbComment := &pb.Comment{}
 	copier.Copy(pbComment, insertComment)
 	return &pb.CreateCommentResponse{
