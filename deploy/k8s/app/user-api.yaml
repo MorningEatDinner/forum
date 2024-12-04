@@ -14,9 +14,10 @@ spec:
       labels:
         app: user-api
     spec:
+      serviceAccount: find-endpoints
       containers:
       - name: user-api
-        image: morningeatdinner/user-api:fb1ad77
+        image: morningeatdinner/user-api:58325c0
         ports:
         - containerPort: 8889
 ---
