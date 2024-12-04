@@ -1,3 +1,5 @@
+create database community;
+use  community;
 CREATE TABLE `communities` (
     `community_id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '社区ID',
     `community_name` varchar(100) NOT NULL DEFAULT '' COMMENT '社区名称',

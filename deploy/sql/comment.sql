@@ -1,3 +1,5 @@
+create database comment;
+use  comment;
 CREATE TABLE comments (
     comment_id   BIGINT AUTO_INCREMENT ,
     post_id      BIGINT NOT NULL,           -- 关联帖子ID

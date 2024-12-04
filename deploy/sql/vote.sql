@@ -1,24 +1,19 @@
-CREATE TABLE vote_record (
-  vote_id      BIGINT AUTO_INCREMENT COMMENT '投票记录ID',
-  post_id      BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '帖子id', 
-  user_id      BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '用户ID',
-  vote_type    TINYINT(4) NOT NULL DEFAULT 0 COMMENT '投票类型 0:赞成票 1:反对票',
-  create_time  DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
-  updated_time DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '更新时间',
-  
-  PRIMARY KEY(vote_id),
-  UNIQUE KEY uniq_post_user (post_id, user_id),
-  INDEX idx_user_id (user_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='投票记录表';
+create database vote;
+use  vote;
+-- auto-generated definition
+create table vote_record
+(
+    vote_id      bigint auto_increment comment '投票记录ID'
+        primary key,
+    post_id      bigint unsigned default '0'                  not null comment '帖子id',
+    user_id      bigint unsigned default '0'                  not null comment '用户ID',
+    vote_type    tinyint         default 0                    not null comment '投票类型 0:赞成票 1:反对票',
+    create_time  datetime(3)     default CURRENT_TIMESTAMP(3) not null comment '创建时间',
+    updated_time datetime(3)     default CURRENT_TIMESTAMP(3) not null on update CURRENT_TIMESTAMP(3) comment '更新时间',
+    constraint uniq_post_user
+        unique (post_id, user_id)
+)
+    comment '投票记录表' collate = utf8mb4_unicode_ci;
 
-CREATE TABLE vote_count (
-  vote_count_id BIGINT AUTO_INCREMENT COMMENT '投票计数ID',
-  post_id        BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '帖子',
-  agree_count   INT(11) NOT NULL DEFAULT 0 COMMENT '赞成票数',
-  oppose_count  INT(11) NOT NULL DEFAULT 0 COMMENT '反对票数',
-  create_time   DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
-  updated_time  DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '更新时间',
-  
-  PRIMARY KEY(vote_count_id),
-  UNIQUE KEY uniq_post_id (post_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='投票计数表';
+create index idx_user_id
+    on vote_record (user_id);

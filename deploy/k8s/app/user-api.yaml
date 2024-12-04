@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: user-api
-        image: morningeatdinner/user-api:0c1a9fb
+        image: morningeatdinner/user-api:fb1ad77
         ports:
         - containerPort: 8889
 ---

@@ -8,6 +8,7 @@ JwtAuth:
   
 #rpc service
 UserRpcConf:
-  Endpoints:
-    - user-rpc-service.default.svc.cluster.local:3001
-  NonBlock: true
+  # Endpoints:
+  #   - user-rpc-service.default.svc.cluster.local:3001
+  # NonBlock: true
+  Target: k8s://default/user-rpc-service:3001

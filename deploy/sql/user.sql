@@ -1,3 +1,5 @@
+create database users;
+use  users;
 CREATE TABLE users (
     user_id BIGINT AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL,
