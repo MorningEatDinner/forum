@@ -40,6 +40,7 @@ func (l *GetCommentsByPostLogic) GetCommentsByPost(in *pb.GetCommentsByPostReque
 		Comments: commentListResp,
 		Total:    int64(len(listResp)),
 	}
+	logx.WithContext(l.ctx).Infof("get comments by post success, resp: %v", resp)
 
 	return resp, nil
 }

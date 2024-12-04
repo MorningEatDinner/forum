@@ -5,8 +5,6 @@ on:
       - "main"
     paths:
       - 'app/comment/rpc/**' 
-  workflow_dispatch:
-
 
 env:
   DOCKERHUB_USERNAME: morningeatdinner
