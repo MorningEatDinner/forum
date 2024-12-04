@@ -1,0 +1,39 @@
+Name: order-mq
+Host: 0.0.0.0
+Port: 5001
+Mode: dev
+Redis:
+  Host: redis.default.svc.cluster.local:6379
+  Type: node
+  Pass: G62m50oigInC30sf
+  Key: user-mq
+
+EmailMQConf:
+  Username: guest
+  Password: guest
+  Host: rabbitmq.default.svc.cluster.local
+  Port: 5672
+  ListenerQueues:
+    -
+      Name: send_code2email
+
+PhoneMQConf:
+  Username: guest
+  Password: guest
+  Host: rabbitmq.default.svc.cluster.local
+  Port: 5672
+  ListenerQueues:
+    -
+      Name: send_code2phone
+
+Sms:
+  sign_name: "阿里云短信测试"
+  template_code: "SMS_154950909"
+
+MailConf:
+  Host: "mailhog.default.svc.cluster.local"
+  Port: 1025
+  Username: ""
+  Password: ""
+  Address: "webapp@example.com"
+  Name: "webapp"

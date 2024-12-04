@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: user-api
-        image: morningeatdinner/user-api:eba492f
+        image: morningeatdinner/user-api:0c1a9fb
         ports:
         - containerPort: 8889
 ---
@@ -31,4 +31,5 @@ spec:
     - protocol: TCP
       port: 8889
       targetPort: 8889
-  type: ClusterIP
+      nodePort: 30889  # 添加nodePort端口,范围必须在30000-32767之间
+  type: NodePort      # 将类型改为NodePort

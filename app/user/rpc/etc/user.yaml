@@ -1,0 +1,36 @@
+Name: usercenter-rpc
+ListenOn: 0.0.0.0:3001
+Mode: dev
+#jwtAuth
+JwtAuth:
+  AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505da0
+  AccessExpire: 31536000
+Redis:
+  Host: redis.default.svc.cluster.local:6379
+  Type: node
+  Pass: G62m50oigInC30sf
+  Key: user-rpc
+DB:
+  DataSource: root:PXDN93VRKUm8TeE7@tcp(mysql.default.svc.cluster.local:3306)/users?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+Cache:
+  - Host: redis.default.svc.cluster.local:6379
+    Pass: G62m50oigInC30sf
+
+Sms:
+  sign_name: "阿里云短信测试"
+  template_code: "SMS_154950909"
+
+MailConf:
+  Host: "mailhog.default.svc.cluster.local"
+  Port: 1025
+  Username: ""
+  Password: ""
+  Address: "webapp@example.com"
+  Name: "webapp"
+
+RabbitSenderConf:
+  Username: "guest"
+  Password: "guest"
+  Host: "rabbitmq.default.svc.cluster.local"
+  Port: 5672
+  ContentType: "application/json"

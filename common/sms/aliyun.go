@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
@@ -93,7 +94,14 @@ func createClient(accessKeyId *string, accessKeySecret *string) (_result *dysmsa
 }
 
 func NewSmsClient(config SMSConfig) *Aliyun {
-	cli, err := createClient(&config.AccessKeyID, &config.AccessKeySecret)
+	// 从环境变量获取密钥
+	accessKeyID := os.Getenv("ALIYUN_ACCESS_KEY_ID")
+	accessKeySecret := os.Getenv("ALIYUN_ACCESS_KEY_SECRET")
+	if accessKeyID == "" || accessKeySecret == "" {
+		logx.Errorf("阿里云短信配置错误: 请设置环境变量 ALIYUN_ACCESS_KEY_ID 和 ALIYUN_ACCESS_KEY_SECRET")
+		panic("阿里云短信配置错误: 请设置环境变量 ALIYUN_ACCESS_KEY_ID 和 ALIYUN_ACCESS_KEY_SECRET")
+	}
+	cli, err := createClient(&accessKeyID, &accessKeySecret)
 	if err != nil {
 		logx.Errorf("初始化阿里云短信客户端失败: %v", err)
 		panic(err) // 或者直接 os.Exit(1)
