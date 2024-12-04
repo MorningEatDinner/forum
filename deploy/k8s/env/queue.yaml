@@ -1,0 +1,36 @@
+# asynqmon-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asynqmon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: asynqmon
+  template:
+    metadata:
+      labels:
+        app: asynqmon
+    spec:
+      containers:
+      - name: asynqmon
+        image: hibiken/asynqmon:latest
+        ports:
+        - containerPort: 8080
+        args:
+        - '--redis-addr=redis:6379'
+        - '--redis-password=G62m50oigInC30sf'
+---
+# asynqmon-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: asynqmon
+spec:
+  selector:
+    app: asynqmon
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP

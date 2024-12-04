@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rabbitmq-pvc
+spec:
+  # storageClassName: cbs  # 可以省略，因为 cbs 是默认的
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi    # CBS 最小容量要求是 10Gi
