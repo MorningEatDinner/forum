@@ -30,5 +30,6 @@ func main() {
 		serviceGroup.Add(mq)
 	}
 	fmt.Println("start")
+	fmt.Println("start")
 	serviceGroup.Start()
 }

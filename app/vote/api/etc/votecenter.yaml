@@ -8,6 +8,7 @@ JwtAuth:
   
 #rpc service
 VoteRpcConf:
-  Endpoints:
-    - 127.0.0.1:3005
-  NonBlock: true
+  # Endpoints:
+  #   - 127.0.0.1:3005
+  # NonBlock: true
+  Target: k8s://default/vote-rpc-service:3005

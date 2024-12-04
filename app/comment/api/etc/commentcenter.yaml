@@ -7,11 +7,13 @@ JwtAuth:
   AccessExpire: 31536000
 #rpc service
 PostRpcConf:
-  Endpoints:
-    - 127.0.0.1:3003
-  NonBlock: true
+  # Endpoints:
+  #   - 127.0.0.1:3003
+  # NonBlock: true
+  Target: k8s://default/post-rpc-service:3003
 
 CommentRpcConf:
-  Endpoints:
-    - 127.0.0.1:3004
-  NonBlock: true
+  # Endpoints:
+  #   - 127.0.0.1:3004
+  # NonBlock: true
+  Target: k8s://default/comment-rpc-service:3004

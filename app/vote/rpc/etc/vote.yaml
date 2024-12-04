@@ -14,6 +14,7 @@ Cache:
     Pass: G62m50oigInC30sf
 
 PostRpcConf:
-  Endpoints:
-    - 127.0.0.1:3003
-  NonBlock: true
+  # Endpoints:
+  #   - 127.0.0.1:3003
+  # NonBlock: true
+  Target: k8s://default/post-rpc-service:3003

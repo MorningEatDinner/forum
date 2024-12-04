@@ -22,12 +22,14 @@ RabbitSenderConf:
   Port: 5672
   ContentType: "application/json"
 VoteRpcConf:
-  Endpoints:
-    - 127.0.0.1:3005
-  NonBlock: true
+  # Endpoints:
+  #   - 127.0.0.1:3005
+  # NonBlock: true
+  Target: k8s://default/vote-rpc-service:3005
 
 #rpc service
 UserRpcConf:
-  Endpoints:
-    - 127.0.0.1:3001
-  NonBlock: true
+  # Endpoints:
+  #   - 127.0.0.1:3001
+  # NonBlock: true
+  Target: k8s://default/user-rpc-service:3001

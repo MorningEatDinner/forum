@@ -8,21 +8,25 @@ JwtAuth:
   
 #rpc service
 PostRpcConf:
-  Endpoints:
-    - 127.0.0.1:3003
-  NonBlock: true
+  # Endpoints:
+  #   - 127.0.0.1:3003
+  # NonBlock: true
+  Target: k8s://default/post-rpc-service:3003
 
 CommunityRpcConf:
-  Endpoints:
-    - 127.0.0.1:3002
-  NonBlock: true
+  # Endpoints:
+  #   - 127.0.0.1:3002
+  # NonBlock: true
+  Target: k8s://default/community-rpc-service:3002
 
 UserRpcConf:
-  Endpoints:
-    - 127.0.0.1:3001
-  NonBlock: true
+  # Endpoints:
+  #   - 127.0.0.1:3001
+  # NonBlock: true
+  Target: k8s://default/user-rpc-service:3001
 
 CommentRpcConf:
-  Endpoints:
-    - 127.0.0.1:3004
-  NonBlock: true
+  # Endpoints:
+  #   - 127.0.0.1:3004
+  # NonBlock: true
+  Target: k8s://default/comment-rpc-service:3004

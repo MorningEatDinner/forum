@@ -8,15 +8,15 @@ data/
 tmp/
 # app/user/rpc/etc/user.yaml
 # app/user/api/etc/usercenter.yaml
-app/community/rpc/etc/community.yaml
-app/community/api/etc/community.yaml
-app/post/rpc/etc/post.yaml
-app/post/api/etc/post.yaml
-app/comment/rpc/etc/comment.yaml
-app/comment/api/etc/comment.yaml
-app/vote/rpc/etc/votecenter.yaml
-app/vote/api/etc/vote.yaml
+# app/community/rpc/etc/community.yaml
+# app/community/api/etc/community.yaml
+# app/post/rpc/etc/post.yaml
+# app/post/api/etc/post.yaml
+# app/comment/rpc/etc/comment.yaml
+# app/comment/api/etc/comment.yaml
+# app/vote/rpc/etc/votecenter.yaml
+# app/vote/api/etc/vote.yaml
 .VSCodeCounter
 # app/user/mq/etc/user.yaml
-app/mqueue/cmd/job/etc/mqueue.yaml
+# app/mqueue/cmd/job/etc/mqueue.yaml
 .idea

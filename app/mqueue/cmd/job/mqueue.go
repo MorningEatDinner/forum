@@ -32,7 +32,7 @@ func main() {
 	ctx := context.Background()
 	cronJob := logic.NewCronJob(ctx, svcContext)
 	mux := cronJob.Register()
-	fmt.Println("mqx start")
+	fmt.Println("test")
 
 	if err := svcContext.AsynqServer.Run(mux); err != nil {
 		logx.WithContext(ctx).Errorf("!!!CronJobErr!!! run err:%+v", err)
