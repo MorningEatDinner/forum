@@ -1,0 +1,36 @@
+Name: mqueue-job
+Host: 0.0.0.0
+Port: 3002
+Mode: dev
+
+Redis:
+  Host: redis.default.svc.cluster.local:6379
+  Type: node
+  Pass: G62m50oigInC30sf
+
+MailConf:
+  Host: "mailhog.default.svc.cluster.local"
+  Port: 1025
+  Username: ""
+  Password: ""
+  Address: "webapp@example.com"
+  Name: "webapp"
+
+
+#rpc service
+UserRpcConf:
+  # Endpoints:
+  #   - 127.0.0.1:3001
+  # NonBlock: true
+  Target: k8s://default/user-rpc-service:3001
+PostRpcConf:
+  # Endpoints:
+  #   - 127.0.0.1:3003
+  # NonBlock: true
+  Target: k8s://default/post-rpc-service:3003
+
+VoteRpcConf:
+  # Endpoints:
+  #   - 127.0.0.1:3005
+  # NonBlock: true
+  Target: k8s://default/vote-rpc-service:3005
