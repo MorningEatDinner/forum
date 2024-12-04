@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vote-rpc-deployment
+  labels:
+    app: vote-rpc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vote-rpc
+  template:
+    metadata:
+      labels:
+        app: vote-rpc
+    spec:
+      containers:
+      - name: vote-rpc
+        image: morningeatdinner/vote-rpc:42d5b90
+        ports:
+        - containerPort: 3005
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vote-rpc-service
+spec:
+  selector:
+    app: vote-rpc
+  ports:
+    - protocol: TCP
+      port: 3005
+      targetPort: 3005
+      nodePort: 30005
+  type: NodePort

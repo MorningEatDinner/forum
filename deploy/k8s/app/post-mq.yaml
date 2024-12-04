@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-mq-deployment
+  labels:
+    app: user-mq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-mq
+  template:
+    metadata:
+      labels:
+        app: user-mq
+    spec:
+      containers:
+      - name: user-mq
+        image: morningeatdinner/user-mq:40c2bec
+        ports:
+        - containerPort: 5001
+        env:                                    # 添加环境变量配置
+        - name: ALIYUN_ACCESS_KEY_ID           # 对应代码中的环境变量名
+          valueFrom:
+            secretKeyRef:
+              name: ali-secret                 # Secret 的名称
+              key: ALIYUN_ACCESS_KEY_ID        # Secret 中的键名
+        - name: ALIYUN_ACCESS_KEY_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: ali-secret
+              key: ALIYUN_ACCESS_KEY_SECRET
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-mq-service
+spec:
+  selector:
+    app: user-mq
+  ports:
+    - protocol: TCP
+      port: 5001
+      targetPort: 5001
+      nodePort: 30005
+  type: NodePort

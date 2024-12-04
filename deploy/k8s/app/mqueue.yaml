@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mqueue-deployment
+  labels:
+    app: mqueue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mqueue
+  template:
+    metadata:
+      labels:
+        app: mqueue
+    spec:
+      containers:
+      - name: mqueue
+        image: morningeatdinner/mqueue:42d5b90
+        ports:
+        - containerPort: 3002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mqueue-service
+spec:
+  selector:
+    app: mqueue
+  ports:
+    - protocol: TCP
+      port: 3002
+      targetPort: 3002
+      nodePort: 30002
+  type: NodePort

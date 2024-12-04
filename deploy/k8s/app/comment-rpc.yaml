@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comment-rpc-deployment
+  labels:
+    app: comment-rpc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: comment-rpc
+  template:
+    metadata:
+      labels:
+        app: comment-rpc
+    spec:
+      containers:
+      - name: comment-rpc
+        image: morningeatdinner/comment-rpc:42d5b90
+        ports:
+        - containerPort: 3004
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: comment-rpc-service
+spec:
+  selector:
+    app: comment-rpc
+  ports:
+    - protocol: TCP
+      port: 3004
+      targetPort: 3004
+      nodePort: 30004
+  type: NodePort

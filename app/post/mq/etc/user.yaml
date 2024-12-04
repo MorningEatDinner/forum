@@ -1,9 +1,9 @@
-Name: order-mq
+Name: post-mq
 Host: 0.0.0.0
 Port: 5001
 Mode: dev
 Redis:
-  Host: localhost:26379
+  Host: redis.default.svc.cluster.local:6379
   Type: node
   Pass: G62m50oigInC30sf
   Key: post-mq
@@ -11,18 +11,17 @@ Redis:
 DeleteUpMQConf:
   Username: guest
   Password: guest
-  Host: localhost
+  Host: rabbitmq.default.svc.cluster.local
   Port: 5672
   ListenerQueues:
     -
-      Name: "up" 
-
+      Name: "up"
 
 DeleteDownMQConf:
   Username: guest
   Password: guest
-  Host: localhost
+  Host: rabbitmq.default.svc.cluster.local
   Port: 5672
   ListenerQueues:
     -
-      Name: "down" 
+      Name: "down"

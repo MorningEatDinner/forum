@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: post-api-deployment
+  labels:
+    app: post-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: post-api
+  template:
+    metadata:
+      labels:
+        app: post-api
+    spec:
+      serviceAccount: find-endpoints
+      containers:
+      - name: post-api
+        image: morningeatdinner/post-api:42d5b90
+        ports:
+        - containerPort: 8891
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: post-api-service
+spec:
+  selector:
+    app: post-api
+  ports:
+    - protocol: TCP
+      port: 8891
+      targetPort: 8891
+      nodePort: 30891  # 添加nodePort端口,范围必须在30000-32767之间
+  type: NodePort      # 将类型改为NodePort
