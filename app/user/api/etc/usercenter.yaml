@@ -9,5 +9,5 @@ JwtAuth:
 #rpc service
 UserRpcConf:
   Endpoints:
-    - 127.0.0.1:3001
+    - user-rpc-service.default.svc.cluster.local:3001
   NonBlock: true
