@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mqueue-deployment
+  labels:
+    {{- include "microservices.labels" . | nindent 4 }}
+    app: mqueue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mqueue
+  template:
+    metadata:
+      labels:
+        app: mqueue
+    spec:
+      serviceAccount: {{ .Values.global.serviceAccount.name }}
+      containers:
+      - name: mqueue
+        image: {{ .Values.images.mqueue.repository }}:{{ .Values.images.mqueue.tag }}
+        ports:
+        - containerPort: {{ .Values.services.mqueue.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mqueue-service
+  labels:
+    {{- include "microservices.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.services.mqueue.type }}
+  selector:
+    app: mqueue
+  ports:
+    - protocol: TCP
+      port: {{ .Values.services.mqueue.port }}
+      targetPort: {{ .Values.services.mqueue.port }}

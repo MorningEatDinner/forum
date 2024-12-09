@@ -30,3 +30,12 @@ subjects:
 - kind: ServiceAccount
   name: find-endpoints
   namespace: default
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: find-endpoints-token
+  annotations:
+    kubernetes.io/service-account.name: find-endpoints
+type: kubernetes.io/service-account-token

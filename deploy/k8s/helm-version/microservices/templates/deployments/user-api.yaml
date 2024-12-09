@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-api-deployment
+  labels:
+    {{- include "microservices.labels" . | nindent 4 }}
+    app: user-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-api
+  template:
+    metadata:
+      labels:
+        app: user-api
+    spec:
+      serviceAccount: {{ .Values.global.serviceAccount.name }}
+      containers:
+      - name: user-api
+        image: {{ .Values.images.userApi.repository }}:{{ .Values.images.userApi.tag }}
+        ports:
+        - containerPort: {{ .Values.services.userApi.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-api-service
+  labels:
+    {{- include "microservices.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.services.userApi.type }}
+  selector:
+    app: user-api
+  ports:
+    - protocol: TCP
+      port: {{ .Values.services.userApi.port }}
+      targetPort: {{ .Values.services.userApi.port }}
+      nodePort: {{ .Values.services.userApi.nodePort }}

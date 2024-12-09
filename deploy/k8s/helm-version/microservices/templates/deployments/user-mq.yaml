@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-mq-deployment
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "microservices.labels" . | nindent 4 }}
+    app: user-mq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-mq
+  template:
+    metadata:
+      labels:
+        app: user-mq
+    spec:
+      containers:
+      - name: user-mq
+        image: {{ .Values.images.userMq.repository }}:{{ .Values.images.userMq.tag }}
+        ports:
+        - containerPort: {{ .Values.services.userMq.port }}
+        env:
+        - name: ALIYUN_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secrets.alicloud.name }}
+              key: accessKeyId  # 使用固定的key名称
+        - name: ALIYUN_ACCESS_KEY_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secrets.alicloud.name }}
+              key: accessKeySecret  # 使用固  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-mq-service
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "microservices.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.services.userMq.type }}
+  selector:
+    app: user-mq
+  ports:
+    - protocol: TCP
+      port: {{ .Values.services.userMq.port }}
+      targetPort: {{ .Values.services.userMq.port }}
+      nodePort: {{ .Values.services.userMq.nodePort }}

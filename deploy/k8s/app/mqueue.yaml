@@ -17,7 +17,7 @@ spec:
       serviceAccount: find-endpoints
       containers:
       - name: mqueue
-        image: morningeatdinner/mqueue:42d5b90
+        image: morningeatdinner/mqueue-job:42d5b90
         ports:
         - containerPort: 3002
 ---

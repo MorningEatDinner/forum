@@ -1,0 +1,57 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microservices-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      # Comment 服务
+      - path: /comment-api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: comment-api-service
+            port:
+              number: 8892
+
+      # Community 服务
+      - path: /community-api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: community-api-service
+            port:
+              number: 8890
+
+      # Post 服务
+      - path: /post-api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: post-api-service
+            port:
+              number: 8891
+
+      # User 服务
+      - path: /user-api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: user-api-service
+            port:
+              number: 8889
+
+      # Vote 服务
+      - path: /vote-api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: vote-api-service
+            port:
+              number: 8893

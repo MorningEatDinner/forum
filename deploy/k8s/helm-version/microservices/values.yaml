@@ -1,0 +1,63 @@
+global:
+  serviceAccount:
+    name: find-endpoints
+  
+images:
+  mqueue:
+    repository: morningeatdinner/mqueue-job
+    tag: 42d5b90
+  userApi:
+    repository: morningeatdinner/user-api
+    tag: 58325c0
+  userMq:
+    repository: morningeatdinner/user-mq
+    tag: 40c2bec
+  userRpc:
+    repository: morningeatdinner/user-rpc
+    tag: 40c2bec
+
+services:
+  mqueue:
+    port: 3002
+    type: ClusterIP
+  userApi:
+    port: 8889
+    nodePort: 30889
+    type: NodePort
+  userMq:
+    port: 5001
+    nodePort: 30005
+    type: NodePort
+  userRpc:
+    port: 3001
+    nodePort: 30001
+    type: NodePort
+
+ingress:
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+  paths:
+    - path: /comment-api(/|$)(.*)
+      service: comment-api-service
+      port: 8892
+    - path: /community-api(/|$)(.*)
+      service: community-api-service
+      port: 8890
+    - path: /post-api(/|$)(.*)
+      service: post-api-service
+      port: 8891
+    - path: /user-api(/|$)(.*)
+      service: user-api-service
+      port: 8889
+    - path: /vote-api(/|$)(.*)
+      service: vote-api-service
+      port: 8893
+
+secrets:
+  alicloud:
+    name: ali-secret
+    keys:
+      accessKeyId: TFRBSTV0UFFRR2RaS1R6WmdwNVVuSGpX
+      accessKeySecret: UmVpdFBocDB4bmZTN29FZlVOb2hqNFp1c0tNbFdZ

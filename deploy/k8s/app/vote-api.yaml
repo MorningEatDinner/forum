@@ -17,7 +17,7 @@ spec:
       serviceAccount: find-endpoints
       containers:
       - name: vote-api
-        image: morningeatdinner/vote-api:42d5b90
+        image: morningeatdinner/vote-api:647c571
         ports:
         - containerPort: 8893
 ---
