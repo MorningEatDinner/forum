@@ -17,3 +17,10 @@ CommentRpcConf:
   #   - 127.0.0.1:3004
   # NonBlock: true
   Target: k8s://default/comment-rpc-service:3004
+
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics

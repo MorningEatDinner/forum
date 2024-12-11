@@ -101,7 +101,6 @@ func (l *GetPostDetailLogic) GetPostDetail(in *pb.GetPostDetailRequest) (*pb.Get
 
 		return ret, nil
 	})
-
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("get post detail failed, err: %v", err)
 		return nil, errors.Wrapf(xerr.NewErrMsg("get post detail failed"), "get post detail failed, postId: %v", in.PostId)

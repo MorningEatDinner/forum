@@ -37,3 +37,8 @@ MailConf:
   Password: ""
   Address: "webapp@example.com"
   Name: "webapp"
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics

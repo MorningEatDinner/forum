@@ -12,3 +12,8 @@ UserRpcConf:
   #   - user-rpc-service.default.svc.cluster.local:3001
   # NonBlock: true
   Target: k8s://default/user-rpc-service:3001
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics

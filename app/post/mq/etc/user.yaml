@@ -25,3 +25,9 @@ DeleteDownMQConf:
   ListenerQueues:
     -
       Name: "down"
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics

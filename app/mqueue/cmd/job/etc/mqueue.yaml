@@ -34,3 +34,8 @@ VoteRpcConf:
   #   - 127.0.0.1:3005
   # NonBlock: true
   Target: k8s://default/vote-rpc-service:3005
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics

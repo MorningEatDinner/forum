@@ -15,3 +15,9 @@ DB:
 Cache:
   - Host: redis.default.svc.cluster.local:6379
     Pass: G62m50oigInC30sf
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics

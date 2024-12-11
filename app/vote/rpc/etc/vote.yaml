@@ -19,3 +19,9 @@ RabbitSenderConf:
   Host: "rabbitmq.default.svc.cluster.local"
   Port: 5672
   ContentType: "application/json"
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
