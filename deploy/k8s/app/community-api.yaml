@@ -13,11 +13,14 @@ spec:
     metadata:
       labels:
         app: community-api
+      annotations:
+        prometheus.io/scrape: "true"    # 放在 Pod template 的 annotations 中
+        prometheus.io/port: "9091"      # 改成您实际暴露 metrics 的端口
     spec:
       serviceAccount: find-endpoints
       containers:
       - name: community-api
-        image: morningeatdinner/community-api:42d5b90
+        image: morningeatdinner/community-api:039d25c
         ports:
         - containerPort: 8890
 ---

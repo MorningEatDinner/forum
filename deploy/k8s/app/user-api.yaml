@@ -13,13 +13,24 @@ spec:
     metadata:
       labels:
         app: user-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9091"
     spec:
       serviceAccount: find-endpoints
       containers:
       - name: user-api
-        image: morningeatdinner/user-api:58325c0
+        image: morningeatdinner/user-api:039d25c
         ports:
         - containerPort: 8889
+        volumeMounts:
+        - name: log-volume
+          mountPath: /var/log/user-api   # 容器内的日志目录路径，根据实际应用的日志输出位置配置
+      volumes:
+      - name: log-volume
+        hostPath:
+          path: /var/log/pods/user-api   # 节点上的日志目录，建议按应用区分
+          type: DirectoryOrCreate        # 如果目录不存在则创建
 ---
 apiVersion: v1
 kind: Service

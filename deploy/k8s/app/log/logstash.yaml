@@ -1,0 +1,83 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: log
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash
+  namespace: log
+spec:
+  selector:
+    app: logstash
+  ports:
+    - protocol: TCP
+      port: 5044
+      targetPort: 5044
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+  namespace: log
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+      - name: logstash
+        image: logstash:8.7.1
+        ports:
+        - containerPort: 5044
+        volumeMounts:
+        - name: config
+          mountPath: /usr/share/logstash/pipeline/
+          
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "1000m"
+            memory: "2Gi"
+      volumes:
+      - name: config
+        configMap:
+          name: logstash-pipeline
+---
+# ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-pipeline
+  namespace: log
+data:
+  logstash.conf: |-
+    input {
+      beats {
+        port => 5044
+      }
+    }
+    
+    filter {
+      json {
+        source => "message"
+      }
+    }
+    
+    output {
+      elasticsearch {
+        hosts => ["elasticsearch:9200"]
+        index => "logstash-%{+YYYY.MM.dd}"
+      }
+    }

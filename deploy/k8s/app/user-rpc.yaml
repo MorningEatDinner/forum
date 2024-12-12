@@ -13,10 +13,13 @@ spec:
     metadata:
       labels:
         app: user-rpc
+      annotations:
+        prometheus.io/scrape: "true"    # 放在 Pod template 的 annotations 中
+        prometheus.io/port: "9091"      # 改成您实际暴露 metrics 的端口
     spec:
       containers:
       - name: user-rpc
-        image: morningeatdinner/user-rpc:40c2bec
+        image: morningeatdinner/user-rpc:039d25c
         ports:
         - containerPort: 3001
         env:

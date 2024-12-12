@@ -13,11 +13,14 @@ spec:
     metadata:
       labels:
         app: comment-api
+      annotations:
+        prometheus.io/scrape: "true"    # 放在 Pod template 的 annotations 中
+        prometheus.io/port: "9091"      # 改成您实际暴露 metrics 的端口
     spec:
       serviceAccount: find-endpoints
       containers:
       - name: comment-api
-        image: morningeatdinner/comment-api:42d5b90
+        image: morningeatdinner/comment-api:039d25c
         ports:
         - containerPort: 8892
 ---
@@ -32,5 +35,5 @@ spec:
     - protocol: TCP
       port: 8892
       targetPort: 8892
-      nodePort: 30892  # 添加nodePort端口,范围必须在30000-32767之间
-  type: NodePort      # 将类型改为NodePort
+      nodePort: 30892
+  type: NodePort
